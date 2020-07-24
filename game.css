@@ -21,7 +21,11 @@ img {
 	vertical-align:			middle;
 }
 .copyright {
-	width:					30%;
+	width:					90%;
+	text-align:				justify;
+}
+.manual {
+	width:					90%;
 	text-align:				justify;
 }
 .button_short {

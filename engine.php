@@ -42,8 +42,8 @@
 			$buildings_cost = '';
 			$prices = '';
 			for ($i = 1; $i <= $CFG->get('GAME','PRODUCTS'); $i++) {
-				$buildings_cost = $buildings_cost.ceil(rand(rand(10,50), (50 + rand(10,50)*(1 + $login_difficulty)))).',';
-				$prices = $prices.ceil(rand(rand(1,5), (10 + rand(1,10)*(1 + $login_difficulty)))).',';
+				$buildings_cost = $buildings_cost.ceil(rand(rand($i,50), (50 + rand(10,(50+$i))*(1 + $login_difficulty)))).',';
+				$prices = $prices.ceil(rand(rand($i,40), (40 + rand(1,(40+$i))*(1 + $login_difficulty)))/10).',';
 			}
 			$buildings_cost = substr($buildings_cost, 0, -1);
 			$prices = substr($prices, 0, -1);	

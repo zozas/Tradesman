@@ -15,6 +15,7 @@
 			var warehouse = [[@warehouse]];
 			var prices = [[@prices]];
 			var money = [@money];
+			var tax = [@tax];
 			var demolish_cost = [@demolish_cost];
 			var products_titles = [[@products_titles]];
 			var products_total = [@products_total];
@@ -80,6 +81,9 @@
 			function view_next() {
 				window.location = "game.php?action=interval";
 			};
+			function view_manual() {
+				window.open("index.php?action=manual", "_blank");
+			}
 			function number_format(number, decimals, dec_point, thousands_sep) {
 				var n = !isFinite(+number) ? 0 : +number, prec = !isFinite(+decimals) ? 0 : Math.abs(decimals), sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep, dec = (typeof dec_point === 'undefined') ? '.' : dec_point, toFixedFix = function (n, prec) {
 					var k = Math.pow(10, prec);
@@ -111,7 +115,7 @@
 			}
 			function warehouse_buy(product_item) {
 				if(money > prices[product_item-1]) {
-					money = money - prices[product_item-1];
+					money = Math.floor(money - prices[product_item-1]*((100 - tax)/100));
 					engine_ajax('buy', (product_item-1));
 					document.getElementById('money_amount').innerHTML  = number_format(money, 0, number_format_decimal, number_format_thousand);
 					warehouse[product_item-1] = warehouse[product_item-1] + 1;
@@ -120,7 +124,7 @@
 					var total_treasury = 0;
 					var i;
 					for (i = 0; i < warehouse.length; i++) {
-						total_treasury = total_treasury + warehouse[i]*prices[i];
+						total_treasury = total_treasury + Math.floor(warehouse[i]*prices[i]*((100 - tax)/100));
 					} 
 					document.getElementById('money_total_amount').innerHTML  = number_format(total_treasury, 0, number_format_decimal, number_format_thousand);
 					document.getElementById('money_amount').innerHTML  = number_format(money, 0, number_format_decimal, number_format_thousand) + ' <small>+' + number_format(total_treasury, 0, number_format_decimal, number_format_thousand) + '</small>&nbsp;';
@@ -128,7 +132,7 @@
 			};
 			function warehouse_sell(product_item) {
 				if (warehouse[product_item-1] > 0) {
-					money = money + prices[product_item-1];
+					money = Math.floor(money + prices[product_item-1]*((100 - tax)/100));
 					engine_ajax('sell', (product_item-1));
 					document.getElementById('money_amount').innerHTML  = number_format(money, 0, number_format_decimal, number_format_thousand);
 					warehouse[product_item-1] = warehouse[product_item-1] - 1;
@@ -137,7 +141,7 @@
 					var total_treasury = 0;
 					var i;
 					for (i = 0; i < warehouse.length; i++) {
-						total_treasury = total_treasury + warehouse[i]*prices[i];
+						total_treasury = total_treasury + Math.floor(warehouse[i]*prices[i]*((100 - tax)/100));
 					} 
 					document.getElementById('money_total_amount').innerHTML  = number_format(total_treasury, 0, number_format_decimal, number_format_thousand);
 					document.getElementById('money_amount').innerHTML  = number_format(money, 0, number_format_decimal, number_format_thousand) + ' <small>+' + number_format(total_treasury, 0, number_format_decimal, number_format_thousand) + '</small>&nbsp;';
@@ -350,6 +354,8 @@
 				<button class='button_short' onclick="view_warehouse();" title='[@warehouse_content]'><img src='70001.png' title='[@warehouse_content]'></button>
 				<button class='button_short' onclick="view_next();" title='[@continue]'><img src='70010.png' title='[@continue]'></button>
 				&nbsp;&nbsp;
+				<button class='button_short' onclick="view_manual();" title='[@manual]'><img src='70011.png' title='[@manual]'></button>
+				&nbsp;&nbsp;
 				<button class='button_short' onclick="logoff();" title='[@logoff]'><img src='70005.png' title='[@logoff]'></button>
 				<br>
 				<br>
@@ -421,6 +427,9 @@
 								</td>
 								<td>
 									[@warehouse_prices]
+								</td>
+								<td align='center'>
+									[@taxation]
 								</td>
 								<td>
 									[@warehouse_total]

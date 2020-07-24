@@ -107,7 +107,7 @@
 									&nbsp;
 								</td>
 								<td>
-									<input type='range' min='0' max='30000' value='365' class='slider' id='login_end' name='login_end'>
+									<input type='range' min='0' max='[@duration_max]' value='[@duration_default]' class='slider' id='login_end' name='login_end'>
 									<br>
 									<small>
 										<span id='login_end_range'></span>
@@ -125,7 +125,7 @@
 									&nbsp;
 								</td>
 								<td>
-									<input type='range' min='0' max='10000' value='1000' class='slider' id='login_money' name='login_money'>
+									<input type='range' min='0' max='[@money_max]' value='[@money_default]' class='slider' id='login_money' name='login_money'>
 									<br>
 									<small>
 										<span id='login_money_range'></span>
@@ -143,7 +143,7 @@
 									&nbsp;
 								</td>
 								<td>
-									<input type='range' min='0' max='100' value='3' class='slider' id='login_citizens' name='login_citizens'>
+									<input type='range' min='0' max='[@citizens_max]' value='[@citizens_default]' class='slider' id='login_citizens' name='login_citizens'>
 									<br>
 									<small>
 										<span id='login_citizens_range'></span>
@@ -161,7 +161,7 @@
 									&nbsp;
 								</td>
 								<td>
-									<input type='range' min='0' max='100' value='75' class='slider' id='login_landmass' name='login_landmass'>
+									<input type='range' min='0' max='[@landmass_max]' value='[@landmass_default]' class='slider' id='login_landmass' name='login_landmass'>
 									<br>
 									<small>
 										<span id='login_landmass_range'></span>
@@ -179,7 +179,7 @@
 									&nbsp;
 								</td>
 								<td>
-									<input type='range' min='0' max='100' value='75' class='slider' id='login_mountain' name='login_mountain'>
+									<input type='range' min='0' max='[@mountains_max]' value='[@mountains_default]' class='slider' id='login_mountain' name='login_mountain'>
 									<br>
 									<small>
 										<span id='login_mountain_range'></span>
@@ -197,7 +197,7 @@
 									&nbsp;
 								</td>
 								<td>
-									<input type='range' min='0' max='100' value='50' class='slider' id='login_difficulty' name='login_difficulty'>
+									<input type='range' min='0' max='[@difficulty_max]' value='[@difficulty_default]' class='slider' id='login_difficulty' name='login_difficulty'>
 									<br>
 									<small>
 										<span id='login_difficulty_range'></span>
@@ -272,62 +272,7 @@
 			</script>
 			<br>
 			<br>
-			<small>
-				[@application_product]
-				<br>
-				version
-				[@application_version]
-				<br>
-				<br>
-				Copyright &copy; [@application_copyright] [@application_author]. Released under [@application_deployment].
-				<br>
-				<table class='copyright'>
-					<tr>
-						<td>
-							<center>
-								<img src='90009.png' title='MIT Licence'>
-							</center>
-							<br>
-							Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-							<br>
-							<br>
-							The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-							<br>
-							<br>
-							The Software is provided “as is”, without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the Software.
-						</td>
-					</tr>
-					<tr>
-						<td>
-							&nbsp;
-						</td>
-					</tr>
-					<tr>
-						<td align='center'>
-							Developed with &#x2764; on
-						</td>
-					</tr>
-					<tr>
-						<td align='center'>
-							<img src='90004.png' title='HTML 5'>&nbsp;
-							<img src='90005.png' title='JavaScript'>&nbsp;
-							<img src='90006.png' title='PHP'>&nbsp;
-							<img src='90007.png' title='MySQL'>&nbsp;
-							<img src='90008.png' title='CSS 3'>
-						</td>
-					</tr>
-					<tr>
-						<td align='center'>
-							Source code and contact information at
-						</td>
-					</tr>
-					<tr>
-						<td align='center'>
-							<a href='https://github.com/zozas'><img src='90010.png' title='Github'></a>
-						</td>
-					</tr>
-				</table>
-			</small>
+			[@application_copyright]
 		</center>
 	</body>
 </html>

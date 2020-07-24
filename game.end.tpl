@@ -94,6 +94,17 @@
 							</td>
 						</tr>
 						<tr>
+							<td>
+								[@tax]
+							</td>
+							<td>
+								:
+							</td>
+							<td>
+								[@total_tax]
+							</td>
+						</tr>
+						<tr>
 							<td colspan='3'>
 								&nbsp;
 							</td>

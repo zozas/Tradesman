@@ -63,7 +63,8 @@
 			$warehouse_prices = explode(",", $GM->get_record('prices'));
 			$warehouse_items = explode(",", $GM->get_record('warehouse'));
 			if (($current_money - $warehouse_prices[$action_parameters]) > 0) {
-				$GM->set_record('money', ($current_money - $warehouse_prices[$action_parameters]));
+				$current_tax = $GM->get_record('tax');
+				$GM->set_record('money', floor($current_money + $warehouse_prices[$action_parameters]*((100 - $current_tax)/100)));
 				$warehouse_items[$action_parameters] = $warehouse_items[$action_parameters] + 1;
 				$warehouse_items_update = implode(',', $warehouse_items);
 				$GM->set_record('warehouse', $warehouse_items_update);
@@ -77,7 +78,8 @@
 			$warehouse_prices = explode(",", $GM->get_record('prices'));
 			$warehouse_items = explode(",", $GM->get_record('warehouse'));
 			if ($warehouse_items[$action_parameters] > 0) {
-				$GM->set_record('money', ($current_money + $warehouse_prices[$action_parameters]));
+				$current_tax = $GM->get_record('tax');
+				$GM->set_record('money', floor($current_money + $warehouse_prices[$action_parameters]*((100 - $current_tax)/100)));
 				$warehouse_items[$action_parameters] = $warehouse_items[$action_parameters] - 1;
 				$warehouse_items_update = implode(',', $warehouse_items);
 				$GM->set_record('warehouse', $warehouse_items_update);

@@ -8,6 +8,9 @@
 	<td id='p[@product_item]_price' align='center'>
 		[@product_item_price]
 	</td>
+	<td id='p[@product_item]_tax' align='center'>
+		[@product_item_tax]
+	</td>
 	<td id='p[@product_item]_value' align='center'>
 		[@product_item_value]
 	</td>

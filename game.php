@@ -74,7 +74,7 @@
 			$TPL->set('application_title', $CFG->get('APPLICATION','TITLE'));
 			$TPL->set('city', $GM->get_record('city'));
 			// Update year
-			$GM->set_record('year', $GM->get_record('year') + 1);			
+			$GM->set_record('year', $GM->get_record('year') + 1);
 			$TPL->set('number_format_decimal', $LNG->get('CONFIG','charset_decimal'));
 			$TPL->set('number_format_thousand', $LNG->get('CONFIG','charset_thousand'));
 			$date = new DateTime('1492-10-10');
@@ -94,7 +94,7 @@
 			} else {
 				$TPL->set('season_remain', '');
 			}
-			// Update production
+			// Update production & tax
 			$buildings = explode(',', $GM->get_record('buildings'));
 			$total_buildings = 0;
 			$citizens_available = $GM->get_record('citizens');
@@ -132,12 +132,24 @@
 					$current_good_manufacturing = $CFG->get('GAME_ITEMS_MANUFACTURING', $current_good_name);
 					if ($CFG->get('GAME_ITEMS_MANUFACTURING', $current_good_name) == 0) {
 						$warehouse_items[$buildings[$i - 1] - 1] = $warehouse_items[$buildings[$i - 1] - 1] + floor(1*$speciality);
+						
+						
+						
+						if ($buildings[$i - 1] > 10) {
+							if ($CFG->get('GAME_ITEMS_FOOD','810'.$buildings[$i - 1]) == 1) {
+								$food_production_rate = $food_production_rate + 1;
+							}
+						} else {
+							if ($CFG->get('GAME_ITEMS_FOOD','8100'.$buildings[$i - 1]) == 1) {
+								$food_production_rate = $food_production_rate + 1;
+							}
+						}
 					} else {
 						if($warehouse_items[($current_good_manufacturing - 81000) - 1] > 0) {
 							$warehouse_items[($current_good_manufacturing - 81000) - 1] = $warehouse_items[($current_good_manufacturing - 81000) - 1] - 1;
 							$warehouse_items[$buildings[$i - 1] - 1] = $warehouse_items[$buildings[$i - 1] - 1] + floor(1*$speciality);
 							if ($buildings[$i - 1] == $CFG->get('GAME','FOOD_PRODUCT')) {
-								$food_production_rate = $food_production_rate + 1;
+								$food_production_rate = $food_production_rate + 2;
 							}
 						} else {
 							$production_warnings = $production_warnings."<tr><td><img src='".(81000 + $buildings[$i - 1]).".png'></td><td>&harr;</td><td><img src='".$current_good_manufacturing.".png'></td><td align='right'><small>".$LNG->get('ITEMS', 81000 + $buildings[$i - 1])."</small></td><td>&harr;</td><td align='left'><small>".$LNG->get('ITEMS', $current_good_manufacturing)."</small></td><td>&nbsp;&nbsp;</td><td><img src='".(80000 + $buildings[$i - 1]).".png'></td><td>&harr;</td><td><img src='".($current_good_manufacturing-1000).".png'></td><td align='right'><small>".$LNG->get('BUILDINGS', 80000 + $buildings[$i - 1])."</td><td>&harr;</td><td align='left'><small>".$LNG->get('BUILDINGS', $current_good_manufacturing-1000)."</small></td></tr>";
@@ -150,20 +162,52 @@
 			else
 				$speciality = 1;
 			$speciality = number_format($speciality, 2, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal'));
-			
 			if ($production_warnings == '')
 				$production_warnings = '<br>'.$LNG->get('SUMMARY','good_reduced_production').' : <b>0</b><table>';
 			else
 				$production_warnings = '<br>'.$LNG->get('SUMMARY','good_reduced_production').' :<br><table>'.$production_warnings;
-			$TPL->set('production_summary', $LNG->get('GENERAL','speciality').' : <b>'.$speciality.'</b><br>'.$production_warnings.'</table>');
+			// Update tax
+			$current_tax = $GM->get_record('tax');
+			$tax_trend = 0;
+			if ($total_buildings == 0)
+				$tax_trend = rand(1, 3) + $citizens_available - (1 - ($GM->get_record('difficulty')/100));
+			else
+				$tax_trend = rand(1, 3) + $citizens_available/$total_buildings - (1 - ($GM->get_record('difficulty')/100));
+			if ($tax_trend > 1) {
+				$GM->set_record('tax', $current_tax);
+				$current_tax = $current_tax + 1;
+				$current_tax = $current_tax." %"." <span style='color:green;'>&and;</span>";
+			} else if ($tax_trend == 1) {
+				$GM->set_record('tax', $current_tax);
+				$current_tax = $current_tax." %"." <span style='color:blue;'>&asymp;</span>";
+			} else {
+				$GM->set_record('tax', $current_tax);
+				if ($current_tax > 0)
+					$current_tax = $current_tax - 1;
+				else
+					$current_tax = 0;
+				$current_tax = $current_tax." %"." <span style='color:red;'>&or;</span>";
+			}
+			$TPL->set('production_summary', $LNG->get('SUMMARY','tax').' : <b>'.$current_tax. '</b><br>'.$LNG->get('GENERAL','speciality').' : <b>'.$speciality.'</b><br>'.$production_warnings.'</table>');
 			$warehouse_items_update = implode(',', $warehouse_items);
 			$GM->set_record('warehouse', $warehouse_items_update);
-			// Citizens and food
-			$food_rations_available = $warehouse_items[$CFG->get('GAME','FOOD_PRODUCT')-1];
+			$food_rations_available = $food_production_rate;
 			$citizens_available = $GM->get_record('citizens');
 			$TPL->set('population', $LNG->get('GENERAL','population'));
 			if($citizens_available > $food_rations_available) {
 				$warehouse_items[$CFG->get('GAME','FOOD_PRODUCT')-1] = 0;
+				$food_rations_available = 0;
+				for ($j = 1; $j <= $CFG->get('GAME','PRODUCTS'); $j++) {
+					if ($j > 10) {
+						if ($CFG->get('GAME_ITEMS_FOOD','810'.$j) == 1) {
+							$warehouse_items[$j-1] = 0;
+						}
+					} else {
+						if ($CFG->get('GAME_ITEMS_FOOD','8100'.$j) == 1) {
+							$warehouse_items[$j-1] = 0;
+						}
+					}				
+				}
 				$citizens_decrease_rate = 1;
 				$citizens_available = $citizens_available - $citizens_decrease_rate;
 				if ($citizens_available < 0)
@@ -172,9 +216,43 @@
 					$TPL->set('citizen_summary', $LNG->get('SUMMARY','citizens_decrease').'<br>'.$LNG->get('SUMMARY','citizens_decrease_rate').' <b>'.$citizens_decrease_rate.'</b> <small>(0%)</small>');
 				else
 					$TPL->set('citizen_summary', $LNG->get('SUMMARY','citizens_decrease').'<br>'.$LNG->get('SUMMARY','citizens_decrease_rate').' <b>'.$citizens_decrease_rate.'</b> <small>(-'.number_format(($citizens_decrease_rate/$citizens_available)*100, 0).'%)</small>');
-			} else if($citizens_available < $food_rations_available) {
+			} else if($citizens_available <= $food_rations_available) {
 				$food_rations_available = $food_rations_available - $citizens_available;
-				$warehouse_items[$CFG->get('GAME','FOOD_PRODUCT')-1] = $food_rations_available;
+				for ($j = 1; $j <= $CFG->get('GAME','PRODUCTS'); $j++) {
+					if ($j > 10) {
+						if ($CFG->get('GAME_ITEMS_FOOD','810'.$j) == 1) {
+							$warehouse_items[$j-1] = $warehouse_items[$j-1] - $food_rations_available;
+							if ($warehouse_items[$j-1] < 0 ) {
+								$food_rations_available = abs($warehouse_items[$j-1]);
+								$warehouse_items[$j-1] = 0;
+							} else {
+								$food_rations_available = 0;
+							}
+						}
+					} else {
+						if ($CFG->get('GAME_ITEMS_FOOD','8100'.$j) == 1) {
+							$warehouse_items[$j-1] = $warehouse_items[$j-1] - $food_rations_available;
+							if ($warehouse_items[$j-1] < 0 ) {
+								$food_rations_available = abs($warehouse_items[$j-1]);
+								$warehouse_items[$j-1] = 0;
+							} else {
+								$food_rations_available = 0;
+							}
+						}
+					}				
+				}
+				$food_rations_available = 0;
+				for ($j = 1; $j <= $CFG->get('GAME','PRODUCTS'); $j++) {
+					if ($j > 10) {
+						if ($CFG->get('GAME_ITEMS_FOOD','810'.$j) == 1) {
+							$food_rations_available = $food_rations_available + $warehouse_items[$j-1];
+						}
+					} else {
+						if ($CFG->get('GAME_ITEMS_FOOD','8100'.$j) == 1) {
+							$food_rations_available = $food_rations_available + $warehouse_items[$j-1];
+						}
+					}
+				}
 				$citizens_increase_rate = 1;
 				$citizens_available = $citizens_available + $citizens_increase_rate;
 				$TPL->set('citizen_summary', $LNG->get('SUMMARY','citizens_increase').'<br>'.$LNG->get('SUMMARY','citizens_increase_rate').' <b>'.$citizens_increase_rate.'</b> <small>(+'.number_format(($citizens_increase_rate/$citizens_available)*100, 0).'%)</small>');
@@ -229,6 +307,7 @@
 				}
 				$TPL_WAREHOUSE_ITEM->set('product_item_quantity', number_format($warehouse_items[$i-1], 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
 				$TPL_WAREHOUSE_ITEM->set('product_item_price', number_format($warehouse_prices[$i-1], 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
+				$TPL_WAREHOUSE_ITEM->set('product_item_tax', number_format($warehouse_prices[$i-1]*($GM->get_record('tax')/100), 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
 				$TPL_WAREHOUSE_ITEM->set('product_item_value', number_format(($warehouse_items[$i-1]*$warehouse_prices[$i-1]), 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
 				$total_value = $total_value + ($warehouse_items[$i-1]*$warehouse_prices[$i-1]);
 				$TPL_WAREHOUSE_ITEM->set('product_item_buy_button', number_format(($prices_exchange[$i-1]*$warehouse_prices[$i-1]), 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
@@ -297,8 +376,7 @@
 				$GM->set_record('demolish_cost', floor($GM->get_record('demolish_cost')-1*$demolition_factor));
 			}
 			if($GM->get_record('demolish_cost') <= 0)
-				$GM->set_record('demolish_cost', 10);			
-			
+				$GM->set_record('demolish_cost', 10);
 			$TPL->set('real_estate_summary', $LNG->get('SUMMARY','build_total').' : <b>'.$total_buildings.'</b><br>'.$LNG->get('SUMMARY','build_occupied_percent').' : <b>'.number_format((100*$total_buildings/$tilemap_size), 2, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')).'%</b><br>'.$LNG->get('SUMMARY','build_total_stats').' : <b>'.$GM->get_record('builds').'</b><br>'.$LNG->get('SUMMARY','demolish_total_stats').' : <b>'.$GM->get_record('demolitions').'</b><br><br>'.$LNG->get('SUMMARY','build_factor').' : <b>'.number_format(($build_factor), 2, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')).'</b><br>'.$build_status.'<br><br>'.$LNG->get('SUMMARY','demolish_cost').' : <b>'.$GM->get_record('builds').'</b><br>'.$LNG->get('SUMMARY','demolish_factor').' : <b>'.number_format(($demolition_factor), 2, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')).'</b><br>'.$demolish_status);
 
 
@@ -309,12 +387,13 @@
 			//
 			//
 			// TODO : RANDOM EVENTS
-			// TODO : TAX
 			//
 			//
 
 		
-		
+			
+			
+			
 		
 		
 		
@@ -330,9 +409,12 @@
 			$TPL->set('warehouse_amount', number_format($warehouse_amount, 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
 			// Final echo
 			$TPL->set('score', $LNG->get('MENU','score'));
-			$score_result = ($GM->get_record('money') + $warehouse_amount + ($GM->get_record('citizens')*1000) + ($total_buildings*500));
-			if ($GM->get_record('year') != 0)
-				$score_result =  $score_result / $GM->get_record('year');
+			$TPL->set('score_result', number_format($GM->get_record('score'), 2, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
+			$score_result = (($GM->get_record('money') + $warehouse_amount)*((1 - $GM->get_record('tax'))/100) + ($GM->get_record('citizens')*1000) + ($total_buildings*500));
+			if ($GM->get_record('end') != 0)
+				$score_result =  $score_result / ($GM->get_record('year') / $GM->get_record('end'));
+			else
+				$score_result =  $score_result / ($GM->get_record('year') / $CFG->get('GAME','DURATION_MAX'));
 			$score_result = $score_result * ($GM->get_record('difficulty')/100);
 			$TPL->set('score_result', number_format($score_result, 2, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
 			$GM->set_record('score', $score_result);
@@ -375,6 +457,8 @@
 			$TPL->set('year', $date->format($LNG->get('CONFIG','date_format')));
 			$TPL->set('season', $LNG->get('GENERAL','season'));
 			$TPL->set('treasury', $LNG->get('GENERAL','treasury'));
+			$TPL->set('tax', $LNG->get('SUMMARY','tax'));
+			$TPL->set('total_tax', $GM->get_record('tax'). ' %');			
 			$warehouse_items = explode(',', $GM->get_record('warehouse'));
 			$warehouse_prices = explode(',', $GM->get_record('prices'));
 			$warehouse_amount = 0;
@@ -413,9 +497,11 @@
 			}
 			$TPL->set('products', $production);
 			$TPL->set('score', $LNG->get('MENU','score'));
-			$score_result = ($GM->get_record('money') + $warehouse_amount + ($GM->get_record('citizens')*1000) + ($total_buildings*500));
-			if ($GM->get_record('year') != 0)
-				$score_result =  $score_result / $GM->get_record('year');
+			$score_result = (($GM->get_record('money') + $warehouse_amount)*((1 - $GM->get_record('tax'))/100) + ($GM->get_record('citizens')*1000) + ($total_buildings*500));
+			if ($GM->get_record('end') != 0)
+				$score_result =  $score_result / ($GM->get_record('year') / $GM->get_record('end'));
+			else
+				$score_result =  $score_result / ($GM->get_record('year') / $CFG->get('GAME','DURATION_MAX'));			
 			$score_result = $score_result * ($GM->get_record('difficulty')/100);
 			$GM->set_record('score', $score_result);
 			$TPL->set('score_result', number_format($score_result, 2, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
@@ -448,7 +534,10 @@
 			$TPL->set('city', $GM->get_record('city'));
 			$TPL->set('map', $map);
 			$TPL->set('logoff', $LNG->get('MENU','logoff'));
+			$TPL->set('manual', $LNG->get('MENU','manual'));
 			$TPL->set('money', $GM->get_record('money'));
+			$TPL->set('tax', $GM->get_record('tax'));
+			$TPL->set('taxation', $LNG->get('SUMMARY','tax').' '.$GM->get_record('tax').'%');
 			$TPL->set('products_total', $CFG->get('GAME','PRODUCTS'));
 			$TPL->set('treasury', $LNG->get('GENERAL','treasury'));
 			$TPL->set('number_format_decimal', $LNG->get('CONFIG','charset_decimal'));
@@ -515,8 +604,9 @@
 				}
 				$TPL_WAREHOUSE_ITEM->set('product_item_quantity', number_format($warehouse_items[$i-1], 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
 				$TPL_WAREHOUSE_ITEM->set('product_item_price', number_format($warehouse_prices[$i-1], 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
-				$TPL_WAREHOUSE_ITEM->set('product_item_value', number_format(($warehouse_items[$i-1]*$warehouse_prices[$i-1]), 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
-				$total_value = $total_value + ($warehouse_items[$i-1]*$warehouse_prices[$i-1]);
+				$TPL_WAREHOUSE_ITEM->set('product_item_tax', number_format($warehouse_prices[$i-1]*($GM->get_record('tax')/100), 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
+				$TPL_WAREHOUSE_ITEM->set('product_item_value', number_format(($warehouse_items[$i-1]*$warehouse_prices[$i-1]*(1 - ($GM->get_record('tax')/100))), 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
+				$total_value = $total_value + floor(($warehouse_items[$i-1]*$warehouse_prices[$i-1])*(1 - ($GM->get_record('tax')/100)));
 				$TPL_WAREHOUSE_ITEM->set('product_item_sell_button', "<button class='button_short' onclick='warehouse_sell(\"".$i."\")' title='".$LNG->get('GENERAL','sell')."'><img src='70002.png'></button>");
 				$TPL_WAREHOUSE_ITEM->set('product_item_buy_button', "<button class='button_short' onclick='warehouse_buy(\"".$i."\")' title='".$LNG->get('GENERAL','buy')."'><img src='70003.png'></button>");
 				$warehouse_status = $warehouse_status.$TPL_WAREHOUSE_ITEM->get();

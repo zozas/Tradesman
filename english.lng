@@ -8,6 +8,7 @@
 	charset_thousand		= ".";
 	code					= "en";
 	date_format				= "Y-m-d";
+	manual					= "english.manual.lng";
 	name					= "English";
 [MENU]
 	city					= "City name";
@@ -17,6 +18,8 @@
 	configure_new_info		= "Configure and start a new session";
 	create					= "Create";
 	days					= "Days";
+	donate					= "Donate";
+	donation_info			= "Consider donating to help development";
 	difficulty				= "% (0 for easy, 100 for hard)";
 	difficulty_range		= "Difficulty";
 	email					= "E-mail";
@@ -28,6 +31,8 @@
 	load_info				= "Load and continue a previous saved session";
 	login					= "Login";
 	logoff					= "Exit";
+	manual					= "Manual";
+	manual_info				= "A coprehensive manual on the game";
 	money					= "Money";
 	money_range				= "Starting fortune";
 	mountain				= "% mountain";
@@ -78,6 +83,7 @@
 	season_summary			= "Season summary";
 	season_days_past		= "days from the year of our settlement";
 	season_days_remain		= "days remain for your reign";
+	tax						= "Tax";
 [GENERAL]
 	available				= "Available for building";
 	balance					= "Balance";
@@ -110,7 +116,7 @@
 	81004					= "Gems";
 	81005					= "Stone";
 	81006					= "Metals";
-	81007					= "Food";
+	81007					= "Wheat";
 	81008					= "Cotton";
 	81009					= "Sugar";
 	81010					= "Tobacco";
@@ -118,7 +124,7 @@
 	81012					= "Furs";
 	81013					= "Herbs";
 	81014					= "Livestock";
-	81015					= "Food rations";
+	81015					= "Food";
 	81016					= "Gold";
 	81017					= "Tools";
 	81018					= "Jewellery";

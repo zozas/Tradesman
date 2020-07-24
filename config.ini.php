@@ -17,16 +17,28 @@
 	SUBTITLE				= "Fabricatio Mercatura Prosperitas";
 	TYPE					= "text/css";
 	XUA						= "IE=7";
-	VERSION					= "0.0.20200718";
+	VERSION					= "0.0.20200724";
 	VIEWPORT				= "width=device-width,initial-scale=1.0";
 [DATABASE]
-	HOST					= "sql202.mipropia.com";
-	NAME					= "mipc_26314676_tradesman";
-	PASSWORD				= "kokoriko";
-	USER					= "mipc_26314676";
+	HOST					= "";
+	NAME					= "";
+	PASSWORD				= "";
+	USER					= "";
 [GAME]
+	CITIZENS_DEFAULT		= 3;
+	CITIZENS_MAX			= 100;
+	DIFFICULTY_DEFAULT		= 50;
+	DIFFICULTY_MAX			= 100;
+	DURATION_DEFAULT		= 365;
+	DURATION_MAX			= 30000;
 	FOOD_PRODUCT			= 15;
 	MAP_SIZE				= 100;
+	LANDMASS_DEFAULT		= 75;
+	LANDMASS_MAX			= 100;
+	MONEY_DEFAULT			= 1000;
+	MONEY_MAX				= 10000;
+	MOUNTAINS_DEFAULT		= 50;
+	MOUNTAINS_MAX			= 100;
 	PRICE_RECOVERY_CHANCE	= 55;
 	PRICE_RECOVERY			= 5;
 	PRODUCTS				= 26;
@@ -58,6 +70,33 @@
 	81024					= 81012;
 	81025					= 81013;
 	81026					= 81014;
+[GAME_ITEMS_FOOD]
+	81001					= 1;
+	81002					= 0;
+	81003					= 0;
+	81004					= 0;
+	81005					= 0;
+	81006					= 0;
+	81007					= 1;
+	81008					= 0;
+	81009					= 0;
+	81010					= 0;
+	81011					= 0;
+	81012					= 0;
+	81013					= 0;
+	81014					= 1;
+	81015					= 1;
+	81016					= 0;
+	81017					= 0;
+	81018					= 0;
+	81019					= 0;
+	81020					= 0;
+	81021					= 0;
+	81022					= 0;
+	81023					= 0;
+	81024					= 0;
+	81025					= 0;
+	81026					= 0;
 [GAME_BUILDINGS_LAND_COMBATIBILITY]
 	80001					= 1;
 	80002					= 1;
