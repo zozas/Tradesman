@@ -303,6 +303,7 @@
 			$TPL->set('delete', $LNG->get('GENERAL','delete'));
 			$TPL->set('id', $SES->get('USER_ID'));
 			$GM = new game($SES->get('USER_ID'));
+			$GM->load_session();
 			$TPL->set('city', $GM->get_record('city'));
 			$TPL->set('season_days', '<i>'.$GM->get_record('year').'&nbsp;'.$LNG->get('SUMMARY','season_days_past').'</i>');
 			$date = new DateTime('1492-10-10');

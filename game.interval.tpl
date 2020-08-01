@@ -24,6 +24,9 @@
 					<img src='90001.png' class='logo_small'>
 					[@city]
 				</div>
+				<button class='button_short' onclick='[@view]();' title='[@continue]'><img src='70010.png' title='[@continue]'></button>
+				<br>
+				<br>
 				<div class='menu_item_information'>
 					<img src='70004.png' title='[@treasury]'>
 					[@money_amount]&nbsp;<small>+[@warehouse_amount]</small>&nbsp;
@@ -36,12 +39,8 @@
 					<img src='70007.png' title='[@population]'>
 					[@citizens]
 				</div>
-				<button class='button_short' onclick='[@view]();' title='[@continue]'><img src='70010.png' title='[@continue]'></button>
 			</div>
-			<br>
-			<br>
 			<div id='summary' width='320' height='320'>
-				<br>
 				<br>
 				<div class='menu_item_information'>
 					<b>
@@ -185,6 +184,96 @@
 								</td>
 							</tr>
 						</tfoot>
+					</table>
+				</div>
+			</div>
+			<div id='statistics' width='320' height='320'>
+				<br>
+				<br>
+				<div class='menu_item_information'>
+					<b>
+						[@statistics_content]
+					</b>
+					<br>
+					<br>
+					<table>
+						<thead>
+							<tr>
+								<td>
+									<b>
+										[@statistics_score]
+									</b>
+									<hr>
+									<table>
+										[@statistics_score_summary]
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									&nbsp;
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<b>
+										[@statistics_money]
+									</b>
+									<hr>
+									<table>
+										[@statistics_money_summary]
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									&nbsp;
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<b>
+										[@statistics_citizens]
+									</b>
+									<hr>
+									<table>
+										[@statistics_citizens_summary]
+									<table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									&nbsp;
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<b>
+										[@statistics_buildings]
+									</b>
+									<hr>
+									<table>
+										[@statistics_buildings_summary]
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									&nbsp;
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<b>
+										[@statistics_prices]
+									</b>
+									<hr>
+									<table>
+										[@statistics_prices_summary]
+									</table>
+								</td>
+							</tr>
+						</thead>
 					</table>
 				</div>
 			</div>

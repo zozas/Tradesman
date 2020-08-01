@@ -53,6 +53,81 @@ img {
 	position:				relative;
 	top:					1px;
 }
+.button_red_short {
+	-moz-box-shadow:		inset 0px 0px 0px 0px #f5978e;
+	-webkit-box-shadow:		inset 0px 0px 0px 0px #f5978e;
+	box-shadow:				inset 0px 1px 0px 0px #f5978e;
+	background-color:		#f07838;
+	-webkit-border-radius:	6px;
+	-moz-border-radius:		6px;
+	border-radius:			6px;
+	border:					1px solid #d02718;
+	display:				inline-block;
+	color:					#ffffff;
+	font-family:			Trebuchet MS;
+	font-size:				12px;
+	font-weight:			bold;
+	padding:				2px 2px;
+	text-decoration:		none;
+	text-shadow:			0px 1px 0px #810e05;
+}
+.button_red_short:hover {
+	background-color:		#c62d1f;
+}
+.button_red_short:active {
+	position:				relative;
+	top:					1px;
+}
+.button_blue_short {
+	-moz-box-shadow:		inset 0px 0px 0px 0px #97c4fe;
+	-webkit-box-shadow:		inset 0px 0px 0px 0px #97c4fe;
+	box-shadow:				inset 0px 1px 0px 0px #97c4fe;
+	background-color:		#3d94f6;
+	-webkit-border-radius:	6px;
+	-moz-border-radius:		6px;
+	border-radius:			6px;
+	border:					1px solid #337fed;
+	display:				inline-block;
+	color:					#ffffff;
+	font-family:			Trebuchet MS;
+	font-size:				12px;
+	font-weight:			bold;
+	padding:				2px 2px;
+	text-decoration:		none;
+	text-shadow:			0px 1px 0px #1570cd;
+}
+.button_blue_short:hover {
+	background-color:		#1e62d0;
+}
+.button_blue_short:active {
+	position:				relative;
+	top:					1px;
+}
+.button_green_short {
+	-moz-box-shadow:		inset 0px 0px 0px 0px #caefab;
+	-webkit-box-shadow:		inset 0px 0px 0px 0px #caefab;
+	box-shadow:				inset 0px 1px 0px 0px #caefab;
+	background-color:		#77d42a;
+	-webkit-border-radius:	6px;
+	-moz-border-radius:		6px;
+	border-radius:			6px;
+	border:					1px solid #268a16;
+	display:				inline-block;
+	color:					#306108;
+	font-family:			Trebuchet MS;
+	font-size:				12px;
+	font-weight:			bold;
+	padding:				2px 2px;
+	text-decoration:		none;
+	text-shadow:			0px 1px 0px #aade7c;
+}
+.button_green_short:hover {
+	background-color:		#5cb811;
+}
+.button_green_short:active {
+	position:				relative;
+	top:					1px;
+}
 .logo_big {
 	width:					64px;
 	height:					64px;
@@ -130,4 +205,33 @@ img {
 	width:					16px;
 	height:					16px;
 	background:				#ffec64;
+}
+.graph {
+	-moz-box-shadow:		inset 0px 0px 0px 0px #fff6af;
+	-webkit-box-shadow:		inset 0px 0px 0px 0px #fff6af;
+	box-shadow:				inset 0px 1px 0px 0px #fff6af;
+	background-color:		#ffec64;
+	-webkit-border-radius:	6px;
+	-moz-border-radius:		6px;
+	border-radius:			6px;
+	border:					1px solid #ffaa22;
+	display:				inline-block;
+	color:					#333333;
+	font-family:			Trebuchet MS;
+	font-size:				12px;
+	font-weight:			bold;
+	padding:				2px 2px;
+	text-decoration:		none;
+	text-shadow:			0px 1px 0px #ffee66;
+    width:					16px;
+    height:					16px;
+    vertical-align:			middle;
+}
+.bar {
+    width:					6px;
+    margin:					1px;
+    display:				inline-block;
+    position:				relative;
+    background-color:		#ffaa22;
+    vertical-align:			baseline;
 }

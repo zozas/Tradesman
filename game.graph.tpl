@@ -1,0 +1,1 @@
+<tr><td><div class='graph'><div style='height: [@start]px;' class='bar'></div><div style='height: [@end]px;' class='bar'></div></div></td><td>[@image]</td><td>[@historic]</td><td>&rarr;</td><td>[@current]</td><td><small>([@percent]%)</small></td></tr>

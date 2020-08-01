@@ -33,6 +33,8 @@
 				warehouse_content.style.display = 'none';
 				var plot_content = document.getElementById('plot');
 				plot_content.style.display = 'none';
+				var statistics_content = document.getElementById('statistics');
+				statistics_content.style.display = 'none';
 				window.addEventListener('resize', resize, false);
 				var total_treasury = 0;
 				var i;
@@ -72,11 +74,30 @@
 			function view_warehouse() {
 				var plot_content = document.getElementById('plot');
 				plot_content.style.display = 'none';
+				var statistics_content = document.getElementById('statistics');
+				statistics_content.style.display = 'none';
 				var warehouse_content = document.getElementById('warehouse');
-				if (warehouse_content.style.display === 'none')
+				if (warehouse_content.style.display === 'none') {
 					warehouse_content.style.display = 'block';
-				else
-					warehouse_content.style.display = 'none';			
+					warehouse_content.scrollIntoView(true);
+				} else {
+					warehouse_content.style.display = 'none';
+					plot_content.scrollIntoView(true);
+				}
+			};
+			function view_statistics() {
+				var plot_content = document.getElementById('plot');
+				plot_content.style.display = 'none';
+				var warehouse_content = document.getElementById('warehouse');
+				warehouse_content.style.display = 'none';
+				var statistics_content = document.getElementById('statistics');
+				if (statistics_content.style.display === 'none') {
+					statistics_content.style.display = 'block';
+					statistics_content.scrollIntoView(true);
+				} else {
+					statistics_content.style.display = 'none';
+					plot_content.scrollIntoView(true);
+				}
 			};
 			function view_next() {
 				window.location = "game.php?action=interval";
@@ -205,7 +226,7 @@
 							base_image.src = '8000'+buildings[((y*mapW)+x)]+'.png';
 						else
 							base_image.src = '800'+buildings[((y*mapW)+x)]+'.png';
-						canvas.drawImage(base_image, (x*tileW+tileW/4), (y*tileH+tileH/4), tileW/2, tileH/2);
+						canvas.drawImage(base_image, (x*tileW+tileW/16), (y*tileH+tileH/16), tileW/1.4, tileH/1.4);
 					}
 				}
 				requestAnimationFrame(drawGame);
@@ -218,6 +239,8 @@
 							drawGame();
 							var plot_content = document.getElementById('plot');
 							plot_content.style.display = 'none';
+							var statistics_content = document.getElementById('statistics');
+							statistics_content.style.display = 'none';
 							money = money - buildings_cost[building_type - 1];
 							var total_treasury = 0;
 							var i;
@@ -237,6 +260,8 @@
 						buildings[current_tile] = 0;						
 						var plot_content = document.getElementById('plot');
 						plot_content.style.display = 'none';
+						var statistics_content = document.getElementById('statistics');
+						statistics_content.style.display = 'none';
 						money = money - demolision_cost;
 						var total_treasury = 0;
 						var i;
@@ -352,11 +377,11 @@
 					[@city]
 				</div>
 				<button class='button_short' onclick="view_warehouse();" title='[@warehouse_content]'><img src='70001.png' title='[@warehouse_content]'></button>
+				<button class='button_short' onclick="view_statistics();" title='[@statistics_content]'><img src='70012.png' title='[@statistics_content]'></button>
 				<button class='button_short' onclick="view_next();" title='[@continue]'><img src='70010.png' title='[@continue]'></button>
 				&nbsp;&nbsp;
-				<button class='button_short' onclick="view_manual();" title='[@manual]'><img src='70011.png' title='[@manual]'></button>
-				&nbsp;&nbsp;
-				<button class='button_short' onclick="logoff();" title='[@logoff]'><img src='70005.png' title='[@logoff]'></button>
+				<button class='button_blue_short' onclick="view_manual();" title='[@manual]'><img src='70011.png' title='[@manual]'></button>
+				<button class='button_red_short' onclick="logoff();" title='[@logoff]'><img src='70005.png' title='[@logoff]'></button>
 				<br>
 				<br>
 				<div class='menu_item_information'>
@@ -457,6 +482,96 @@
 								</td>
 							</tr>
 						</tfoot>
+					</table>
+				</div>
+			</div>
+			<div id='statistics' width='320' height='320'>
+				<br>
+				<br>
+				<div class='menu_item_information'>
+					<b>
+						[@statistics_content]
+					</b>
+					<br>
+					<br>
+					<table>
+						<thead>
+							<tr>
+								<td>
+									<b>
+										[@statistics_score]
+									</b>
+									<hr>
+									<table>
+										[@statistics_score_summary]
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									&nbsp;
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<b>
+										[@statistics_money]
+									</b>
+									<hr>
+									<table>
+										[@statistics_money_summary]
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									&nbsp;
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<b>
+										[@statistics_citizens]
+									</b>
+									<hr>
+									<table>
+										[@statistics_citizens_summary]
+									<table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									&nbsp;
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<b>
+										[@statistics_buildings]
+									</b>
+									<hr>
+									<table>
+										[@statistics_buildings_summary]
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									&nbsp;
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<b>
+										[@statistics_prices]
+									</b>
+									<hr>
+									<table>
+										[@statistics_prices_summary]
+									</table>
+								</td>
+							</tr>
+						</thead>
 					</table>
 				</div>
 			</div>

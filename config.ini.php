@@ -17,7 +17,7 @@
 	SUBTITLE				= "Fabricatio Mercatura Prosperitas";
 	TYPE					= "text/css";
 	XUA						= "IE=7";
-	VERSION					= "0.0.20200724";
+	VERSION					= "0.0.20200801";
 	VIEWPORT				= "width=device-width,initial-scale=1.0";
 [DATABASE]
 	HOST					= "";

@@ -132,14 +132,109 @@
 								</h1>
 							</td>
 						</tr>
-						<tr>
-							<td colspan='3' align='center'>
-								<form name='game' method='post' action='login.php'>
-									<input type='hidden' name='action' value='logout'>
-									<input type='submit' class='button_short' value='&nbsp;[@logoff]&nbsp;'>
-								</form>
-							</td>
-						</tr>
+					</table>
+				</div>
+			</div>
+			<div id='statistics' width='320' height='320'>
+				<br>
+				<br>
+				<div class='menu_item_information'>
+					<b>
+						[@statistics_content]
+					</b>
+					<br>
+					<br>
+					<table>
+						<thead>
+							<tr>
+								<td>
+									<b>
+										[@statistics_score]
+									</b>
+									<hr>
+									<table>
+										[@statistics_score_summary]
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									&nbsp;
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<b>
+										[@statistics_money]
+									</b>
+									<hr>
+									<table>
+										[@statistics_money_summary]
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									&nbsp;
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<b>
+										[@statistics_citizens]
+									</b>
+									<hr>
+									<table>
+										[@statistics_citizens_summary]
+									<table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									&nbsp;
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<b>
+										[@statistics_buildings]
+									</b>
+									<hr>
+									<table>
+										[@statistics_buildings_summary]
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									&nbsp;
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<b>
+										[@statistics_prices]
+									</b>
+									<hr>
+									<table>
+										[@statistics_prices_summary]
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									&nbsp;
+								</td>
+							</tr>
+							<tr>
+								<td colspan='3' align='center'>
+									<form name='game' method='post' action='login.php'>
+										<input type='hidden' name='action' value='logout'>
+										<input type='submit' class='button_short' value='&nbsp;[@logoff]&nbsp;'>
+									</form>
+								</td>
+							</tr>
+						</thead>
 					</table>
 				</div>
 			</div>

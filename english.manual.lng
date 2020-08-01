@@ -130,6 +130,7 @@
 								<ul><img src='70009.png' title='Destroy'> Destroy selected building</ul>
 								<ul><img src='70010.png' title='Next'> End the round and proceed to next</ul>
 								<ul><img src='70011.png' title='Help'> In game help showing the current manual</ul>
+								<ul><img src='70012.png' title='Statistics'> Display statistics over the game progress</ul>
 								<br>
 								<br>
 								<center>
