@@ -90,7 +90,7 @@
 			$date = new DateTime('1492-10-10');
 			$interval = new DateInterval('P'.$GM->get_record('year').'D');
 			$date->add($interval);
-			$TPL->set('year', $date->format($LNG->get('CONFIG','date_format')));
+			$TPL->set('year', $date->format($LNG->get('CONFIG','date_format')).'&nbsp;<small>'.($GM->get_record('end') - $GM->get_record('year')).'</small>');
 			$TPL->set('season', $LNG->get('GENERAL','season'));
 			$TPL->set('continue', $LNG->get('GENERAL','continue'));
 			$TPL->set('summary_content', $LNG->get('SUMMARY','season_summary'));
@@ -118,21 +118,13 @@
 			$TPL->set('production', $LNG->get('GENERAL','production'));
 			$production_warnings = "";
 			$speciality = 0;
+			$citizen_experience = explode(',', $GM->get_record('expertise'));
 			for ($i = 1; $i < $tilemap_size; $i++) {
 				if($buildings[$i - 1] > 0) {
-					//
-					//
-					//
-					// Reserve for specialty increased production later
 					if ($total_buildings == 0)
 						$speciality = 1 + floor($citizens_available);
 					else
 						$speciality = 1 + floor($citizens_available/$total_buildings);
-					//
-					//
-					//
-					//
-					//
 					$current_good_name = '';
 					if($buildings[$i - 1] < 10) {
 						$current_good_name = '8100'.$buildings[$i - 1];
@@ -141,7 +133,7 @@
 					}
 					$current_good_manufacturing = $CFG->get('GAME_ITEMS_MANUFACTURING', $current_good_name);
 					if ($CFG->get('GAME_ITEMS_MANUFACTURING', $current_good_name) == 0) {
-						$warehouse_items[$buildings[$i - 1] - 1] = $warehouse_items[$buildings[$i - 1] - 1] + floor(1*$speciality);
+						$warehouse_items[$buildings[$i - 1] - 1] = $warehouse_items[$buildings[$i - 1] - 1] + floor(1*$speciality + $citizen_experience[$buildings[$i - 1] - 1]);
 						if ($buildings[$i - 1] > 10) {
 							if ($CFG->get('GAME_ITEMS_FOOD','810'.$buildings[$i - 1]) == 1) {
 								$food_production_rate = $food_production_rate + 1;
@@ -154,7 +146,7 @@
 					} else {
 						if($warehouse_items[($current_good_manufacturing - 81000) - 1] > 0) {
 							$warehouse_items[($current_good_manufacturing - 81000) - 1] = $warehouse_items[($current_good_manufacturing - 81000) - 1] - 1;
-							$warehouse_items[$buildings[$i - 1] - 1] = $warehouse_items[$buildings[$i - 1] - 1] + floor(1*$speciality);
+							$warehouse_items[$buildings[$i - 1] - 1] = $warehouse_items[$buildings[$i - 1] - 1] + floor(1*$speciality + $citizen_experience[$buildings[$i - 1] - 1]);
 							if ($buildings[$i - 1] == $CFG->get('GAME','FOOD_PRODUCT')) {
 								$food_production_rate = $food_production_rate + 2;
 							}
@@ -416,9 +408,9 @@
 			$TPL->set('score_result', number_format($GM->get_record('score'), 2, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
 			$score_result = (($GM->get_record('money') + $warehouse_amount)*((1 - $GM->get_record('tax'))/100) + ($GM->get_record('citizens')*1000) + ($total_buildings*500));
 			if ($GM->get_record('end') != 0)
-				$score_result =  $score_result / ($GM->get_record('end') - $GM->get_record('year'));
+				$score_result =  $score_result / (1 + $GM->get_record('end') - $GM->get_record('year'));
 			else
-				$score_result =  $score_result / ($CFG->get('GAME','DURATION_MAX') - $GM->get_record('year'));
+				$score_result =  $score_result / (1 + $CFG->get('GAME','DURATION_MAX') - $GM->get_record('year'));
 			$score_result = $score_result * ($GM->get_record('difficulty')/100);
 			$TPL->set('score_result', number_format($score_result, 2, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
 			$GM->set_record('score', $score_result);
@@ -469,6 +461,20 @@
 				$TPL_GRAPH->set('current', number_format($statistics['curent']['citizens'], 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
 				$TPL_GRAPH->set('percent', number_format(100*($statistics['curent']['citizens'] - $statistics['historic']['citizens'])/($statistics['historic']['citizens'] +0.01), 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
 				$TPL->set('statistics_citizens_summary', $TPL_GRAPH->get());
+				// Experience
+				$citizen_experience = explode(',', $GM->get_record('expertise'));
+				$experience = "";
+				for ($i = 1; $i <= $CFG->get('GAME','PRODUCTS'); $i++) {
+					if ($citizen_experience[$i - 1] > 0) {
+						if($i > 10) {
+							$experience = $experience."<img src='810".$i.".png' alt='".$LNG->get('ITEMS','810'.$i)."' title='".$LNG->get('ITEMS','810'.$i)."'> ".$LNG->get('ITEMS','810'.$i)." &times; ".$citizen_experience[$i - 1]."<br>";
+						} else {
+							$experience = $experience."<img src='8100".$i.".png' alt='".$LNG->get('ITEMS','8100'.$i)."' title='".$LNG->get('ITEMS','8100'.$i)."'> ".$LNG->get('ITEMS','8100'.$i)." &times; ".$citizen_experience[$i - 1]."<br>";
+						}
+					}
+				}
+				$TPL->set('statistics_experience', $LNG->get('MENU','expertise'));
+				$TPL->set('statistics_citizen_experience_summary', $experience);
 				// Statistics - Buildings summary
 				$TPL->set('statistics_buildings', $LNG->get('MENU','buildings'));
 				$TPL_GRAPH = new template;
@@ -562,7 +568,7 @@
 			$interval = new DateInterval('P'.$GM->get_record('year').'D');
 			$date->add($interval);
 			$TPL->set('warehouse', $LNG->get('MENU','warehouse'));
-			$TPL->set('year', $date->format($LNG->get('CONFIG','date_format')));
+			$TPL->set('year', $date->format($LNG->get('CONFIG','date_format')).'&nbsp;<small>'.($GM->get_record('end') - $GM->get_record('year')).'</small>');
 			$TPL->set('season', $LNG->get('GENERAL','season'));
 			$TPL->set('treasury', $LNG->get('GENERAL','treasury'));
 			$TPL->set('tax', $LNG->get('SUMMARY','tax'));
@@ -661,6 +667,20 @@
 				$TPL_GRAPH->set('current', number_format($statistics['curent']['citizens'], 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
 				$TPL_GRAPH->set('percent', number_format(100*($statistics['curent']['citizens'] - $statistics['historic']['citizens'])/($statistics['historic']['citizens'] +0.01), 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
 				$TPL->set('statistics_citizens_summary', $TPL_GRAPH->get());
+				// Experience
+				$citizen_experience = explode(',', $GM->get_record('expertise'));
+				$experience = "";
+				for ($i = 1; $i <= $CFG->get('GAME','PRODUCTS'); $i++) {
+					if ($citizen_experience[$i - 1] > 0) {
+						if($i > 10) {
+							$experience = $experience."<img src='810".$i.".png' alt='".$LNG->get('ITEMS','810'.$i)."' title='".$LNG->get('ITEMS','810'.$i)."'> ".$LNG->get('ITEMS','810'.$i)." &times; ".$citizen_experience[$i - 1]."<br>";
+						} else {
+							$experience = $experience."<img src='8100".$i.".png' alt='".$LNG->get('ITEMS','8100'.$i)."' title='".$LNG->get('ITEMS','8100'.$i)."'> ".$LNG->get('ITEMS','8100'.$i)." &times; ".$citizen_experience[$i - 1]."<br>";
+						}
+					}
+				}
+				$TPL->set('statistics_experience', $LNG->get('MENU','expertise'));
+				$TPL->set('statistics_citizen_experience_summary', $experience);
 				// Statistics - Buildings summary
 				$TPL->set('statistics_buildings', $LNG->get('MENU','buildings'));
 				$TPL_GRAPH = new template;
@@ -758,7 +778,7 @@
 			$date = new DateTime('1492-10-10');
 			$interval = new DateInterval('P'.$GM->get_record('year').'D');
 			$date->add($interval);
-			$TPL->set('year', $date->format($LNG->get('CONFIG','date_format')));
+			$TPL->set('year', $date->format($LNG->get('CONFIG','date_format')).'&nbsp;<small>'.($GM->get_record('end') - $GM->get_record('year')).'</small>');
 			$TPL->set('season', $LNG->get('GENERAL','season'));
 			$TPL->set('citizens', number_format($GM->get_record('citizens'), 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
 			$TPL->set('population', $LNG->get('GENERAL','population'));
@@ -837,6 +857,28 @@
 				$TPL_GRAPH->set('current', number_format($statistics['curent']['citizens'], 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
 				$TPL_GRAPH->set('percent', number_format(100*($statistics['curent']['citizens'] - $statistics['historic']['citizens'])/($statistics['historic']['citizens'] +0.01), 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
 				$TPL->set('statistics_citizens_summary', $TPL_GRAPH->get());
+				// Experience
+				$TPL->set('expertise_type', $LNG->get('MENU','expertise'));
+				$TPL->set('cost', $LNG->get('MENU','cost'));
+				$TPL->set('level', $LNG->get('MENU','level'));
+				$TPL->set('expertise', $GM->get_record('expertise'));
+				$TPL->set('research', $LNG->get('MENU','research'));
+				//expertise
+				
+				
+				$citizen_experience = explode(',', $GM->get_record('expertise'));
+				$experience = "";
+				for ($i = 1; $i <= $CFG->get('GAME','PRODUCTS'); $i++) {
+					if ($citizen_experience[$i - 1] > 0) {
+						if($i > 10) {
+							$experience = $experience."<img src='810".$i.".png' alt='".$LNG->get('ITEMS','810'.$i)."' title='".$LNG->get('ITEMS','810'.$i)."'> ".$LNG->get('ITEMS','810'.$i)." &times; ".$citizen_experience[$i - 1]."<br>";
+						} else {
+							$experience = $experience."<img src='8100".$i.".png' alt='".$LNG->get('ITEMS','8100'.$i)."' title='".$LNG->get('ITEMS','8100'.$i)."'> ".$LNG->get('ITEMS','8100'.$i)." &times; ".$citizen_experience[$i - 1]."<br>";
+						}
+					}
+				}
+				$TPL->set('statistics_experience', $LNG->get('MENU','expertise'));
+				$TPL->set('statistics_citizen_experience_summary', $experience);
 				// Statistics - Buildings summary
 				$TPL->set('statistics_buildings', $LNG->get('MENU','buildings'));
 				$TPL_GRAPH = new template;
@@ -853,9 +895,9 @@
 					$TPL_GRAPH = new template;
 					$TPL_GRAPH->open('game.graph.tpl');
 					if($i < 10) {
-						$TPL_GRAPH->set('image', "<img src='8000".$i.".png'>&nbsp;".$LNG->get('BUILDINGS','8000'.$i));
+						$TPL_GRAPH->set('image', "<img src='8000".$i.".png' alt='".$LNG->get('BUILDINGS','8000'.$i)."' title='".$LNG->get('BUILDINGS','8000'.$i)."'>&nbsp;".$LNG->get('BUILDINGS','8000'.$i));
 					} else {
-						$TPL_GRAPH->set('image', "<img src='800".$i.".png'>&nbsp;".$LNG->get('BUILDINGS','800'.$i));
+						$TPL_GRAPH->set('image', "<img src='800".$i.".png' alt='".$LNG->get('BUILDINGS','800'.$i)."' title='".$LNG->get('BUILDINGS','800'.$i)."'>&nbsp;".$LNG->get('BUILDINGS','800'.$i));
 					}
 					$TPL_GRAPH->set('start', 16*$statistics['historic']['buildings_cost'][$i]/max(($statistics['historic']['buildings_cost'][$i]+0.01), ($statistics['curent']['buildings_cost'][$i]+0.01)));
 					$TPL_GRAPH->set('end', 16*$statistics['curent']['buildings_cost'][$i]/max(($statistics['historic']['buildings_cost'][$i]+0.01), ($statistics['curent']['buildings_cost'][$i]+0.01)));
@@ -872,9 +914,9 @@
 					$TPL_GRAPH = new template;
 					$TPL_GRAPH->open('game.graph.tpl');
 					if($i < 10) {
-						$TPL_GRAPH->set('image', "<img src='8100".$i.".png'>&nbsp;".$LNG->get('ITEMS','8100'.$i));
+						$TPL_GRAPH->set('image', "<img src='8100".$i.".png' alt='".$LNG->get('ITEMS','8100'.$i)."' title='".$LNG->get('ITEMS','8100'.$i)."'>&nbsp;".$LNG->get('ITEMS','8100'.$i));
 					} else {
-						$TPL_GRAPH->set('image', "<img src='810".$i.".png'>&nbsp;".$LNG->get('ITEMS','810'.$i));
+						$TPL_GRAPH->set('image', "<img src='810".$i.".png' alt='".$LNG->get('ITEMS','810'.$i)."' title='".$LNG->get('ITEMS','810'.$i)."'>&nbsp;".$LNG->get('ITEMS','810'.$i));
 					}
 					$TPL_GRAPH->set('start', 16*$statistics['historic']['prices'][$i]/max(($statistics['historic']['prices'][$i]+0.01), ($statistics['curent']['prices'][$i]+0.01)));
 					$TPL_GRAPH->set('end', 16*$statistics['curent']['prices'][$i]/max(($statistics['historic']['prices'][$i]+0.01), ($statistics['curent']['prices'][$i]+0.01)));

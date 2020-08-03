@@ -20,10 +20,10 @@
 	VERSION					= "0.0.20200801";
 	VIEWPORT				= "width=device-width,initial-scale=1.0";
 [DATABASE]
-	HOST					= "";
-	NAME					= "";
+	HOST					= "localhost";
+	NAME					= "tradesman";
 	PASSWORD				= "";
-	USER					= "";
+	USER					= "root";
 [GAME]
 	CITIZENS_DEFAULT		= 3;
 	CITIZENS_MAX			= 100;

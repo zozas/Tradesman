@@ -181,6 +181,20 @@
 							<tr>
 								<td>
 									<b>
+										[@statistics_experience]
+									</b>
+									<hr>
+									[@statistics_citizen_experience_summary]
+								</td>
+							</tr>
+							<tr>
+								<td>
+									&nbsp;
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<b>
 										[@statistics_citizens]
 									</b>
 									<hr>

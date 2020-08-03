@@ -28,10 +28,12 @@
 	demolish_cost			= "Cost to demolish";
 	demolitions				= "Demolitions";
 	email					= "E-mail";
+	expertise				= "Expertise";
 	highscores				= "Highscores";
 	highscores_info			= "View the most successful sessions";
 	landmass				= "% landmass";
 	landmass_range			= "Map landmass area";
+	level					= "Level";
 	load					= "Load";
 	load_info				= "Load and continue a previous saved session";
 	login					= "Login";
@@ -52,6 +54,7 @@
 	reign_range				= "Days to reign";
 	reign_range_info		= "Duration-free play";
 	remind					= "Remind password";
+	research				= "Research";
 	return					= "Return";
 	score					= "Score";
 	send					= "Send";

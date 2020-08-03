@@ -25,8 +25,9 @@
 					[@city]
 				</div>
 				<button class='button_short' onclick='[@view]();' title='[@continue]'><img src='70010.png' title='[@continue]'></button>
-				<br>
-				<br>
+			</div>
+			<br>
+			<div class='menu_information'>
 				<div class='menu_item_information'>
 					<img src='70004.png' title='[@treasury]'>
 					[@money_amount]&nbsp;<small>+[@warehouse_amount]</small>&nbsp;
@@ -239,6 +240,20 @@
 									<table>
 										[@statistics_citizens_summary]
 									<table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									&nbsp;
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<b>
+										[@statistics_experience]
+									</b>
+									<hr>
+									[@statistics_citizen_experience_summary]
 								</td>
 							</tr>
 							<tr>

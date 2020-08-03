@@ -142,11 +142,11 @@
 			$sql = "SELECT COUNT(*) FROM `users` WHERE `name`='".$login_username."';";
 			$result = $DB->getquery($sql);
 			if ($result[0][0] == 0) {
-				$sql = "INSERT INTO `users` (`id`, `name`, `password`, `email`, `city`, `map`, `buildings`, `buildings_cost`, `warehouse`, `prices`, `prices_exchange`, `year`, `end`, `money`, `citizens`, `demolish_cost`, `builds`, `demolitions`, `difficulty`, `tax`) VALUES (NULL, '".$login_username."', MD5('".$login_password."'), '".$login_email."', '".$login_city."', '".$map."', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '".$buildings_cost."', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '".$prices."', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '0', '".$login_end."', '".$login_money."', '".$login_citizens."', '".$demolish_cost."', '0', '0', '".$login_difficulty."', '1');";
+				$sql = "INSERT INTO `users` (`id`, `name`, `password`, `email`, `city`, `map`, `buildings`, `buildings_cost`, `warehouse`, `prices`, `prices_exchange`, `expertise`, `year`, `end`, `money`, `citizens`, `demolish_cost`, `builds`, `demolitions`, `difficulty`, `tax`) VALUES (NULL, '".$login_username."', MD5('".$login_password."'), '".$login_email."', '".$login_city."', '".$map."', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '".$buildings_cost."', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '".$prices."', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '0', '".$login_end."', '".$login_money."', '".$login_citizens."', '".$demolish_cost."', '0', '0', '".$login_difficulty."', '1');";
 				$result = $DB->setquery($sql);
 				$new_user = $DB->getquery_id();
 				$this->game_session = $new_user;
-				$sql = "INSERT INTO `log` (`id`, `name`, `password`, `email`, `city`, `map`, `buildings`, `buildings_cost`, `warehouse`, `prices`, `prices_exchange`, `year`, `end`, `money`, `citizens`, `demolish_cost`, `builds`, `demolitions`, `difficulty`, `tax`) VALUES ('".$new_user."', '".$login_username."', MD5('".$login_password."'), '".$login_email."', '".$login_city."', '".$map."', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '".$buildings_cost."', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '".$prices."', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '0', '".$login_end."', '".$login_money."', '".$login_citizens."', '".$demolish_cost."', '0', '0', '".$login_difficulty."', '1');";
+				$sql = "INSERT INTO `log` (`id`, `name`, `password`, `email`, `city`, `map`, `buildings`, `buildings_cost`, `warehouse`, `prices`, `prices_exchange`, `expertise`, `year`, `end`, `money`, `citizens`, `demolish_cost`, `builds`, `demolitions`, `difficulty`, `tax`) VALUES ('".$new_user."', '".$login_username."', MD5('".$login_password."'), '".$login_email."', '".$login_city."', '".$map."', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '".$buildings_cost."', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '".$prices."', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '0', '".$login_end."', '".$login_money."', '".$login_citizens."', '".$demolish_cost."', '0', '0', '".$login_difficulty."', '1');";
 				$result = $DB->setquery($sql);
 				$new_user = $DB->getquery_id();
 				return $new_user;
@@ -255,6 +255,21 @@
 				$sql = "SELECT * FROM `users` WHERE `name`='".$this->user_name."' AND `password`=MD5('".$this->user_password."');";
 				$result = $DB->getquery($sql);
 				$this->user_id = $result[0]['id'];
+				// Update online users
+				$session = session_id();
+				$time = time();
+				$time_check = $time-600;
+				$sql = "SELECT * FROM `online` WHERE session='".$session."';";
+				$count = $DB->getquery_rows($sql);
+				if($count == "0") {
+					$sql="INSERT INTO `online` (`user_id`, `session`, `time`) VALUES ('".$this->user_id."', '".$session."', '".$time."');";
+					$result = $DB->setquery($sql);
+				} else {
+					$sql="UPDATE `online` SET `user_id` = '".$this->user_id."', `time` = '".$time."' WHERE `session` = '".$session."';";
+					$result = $DB->setquery($sql);
+				}
+				$sql = "DELETE FROM `online` WHERE `time` < ".$time_check.";";
+				$result = $DB->setquery($sql);
 			} else {
 				$output = false;
 			}
@@ -328,6 +343,11 @@
 				$returnarray[] = $row;
 			}
 			return $returnarray;
+		}
+		public function getquery_rows($query) {
+			$result = mysqli_query($this->db_connection, $query) or die(mysqli_error($this->db_connection));
+			$rows = mysqli_num_rows($result);
+			return $rows;
 		}
 		public function getquery_id() {
 			return mysqli_insert_id($this->db_connection);

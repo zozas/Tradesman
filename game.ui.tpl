@@ -14,6 +14,7 @@
 			var buildings_cost = [[@buildings_cost]];
 			var warehouse = [[@warehouse]];
 			var prices = [[@prices]];
+			var expertise = [[@expertise]];
 			var money = [@money];
 			var tax = [@tax];
 			var demolish_cost = [@demolish_cost];
@@ -68,8 +69,8 @@
 				}
 				if (width > max_width) width = max_width;
 				if (height > max_height) height = max_height;
-				canvas.style.width = width + 'px';
-				canvas.style.height = height + 'px';
+				canvas.style.width = (width-32) + 'px';
+				canvas.style.height = (height-92) + 'px';
 			};
 			function view_warehouse() {
 				var plot_content = document.getElementById('plot');
@@ -122,7 +123,7 @@
 			function engine_ajax(action, action_parameters) {
 				var xhttp = new XMLHttpRequest();
 				xhttp.onreadystatechange = function() {
-					if (this.readyState == 4 && this.status == 200) {						
+					if (this.readyState == 4 && this.status == 200) {
 						if (this.responseText == 'logoff') {
 							logoff();
 						}
@@ -168,7 +169,7 @@
 					document.getElementById('money_amount').innerHTML  = number_format(money, 0, number_format_decimal, number_format_thousand) + ' <small>+' + number_format(total_treasury, 0, number_format_decimal, number_format_thousand) + '</small>&nbsp;';
 				}
 			};
-			function drawGame(highlight_x = 0, highlight_y =0) {
+			function drawGame() {
 				if(canvas==null) { return; }
 				for(var y = 0; y < mapH; ++y) {
 					for(var x = 0; x < mapW; ++x) {
@@ -274,6 +275,23 @@
 					}
 				}
 			};
+			function plot_research(current_tile) {
+				available_expertise_cost = Math.floor(expertise[buildings[current_tile] - 1]*buildings_cost[buildings[current_tile] - 1] + buildings_cost[buildings[current_tile] - 1]);
+				if (available_expertise_cost < money) {
+					money = money - available_expertise_cost;
+					expertise[buildings[current_tile] - 1] = expertise[buildings[current_tile] - 1] + 1;
+					var total_treasury = 0;
+					var i;
+					for (i = 0; i < warehouse.length; i++) {
+						total_treasury = total_treasury + warehouse[i]*prices[i];
+					} 
+					document.getElementById('money_amount').innerHTML  = number_format(money, 0, number_format_decimal, number_format_thousand) + ' <small>+' + number_format(total_treasury, 0, number_format_decimal, number_format_thousand) + '</small>&nbsp;';
+					document.getElementById('container_current_expertise_cost').innerHTML  = number_format((expertise[buildings[current_tile] - 1]*buildings_cost[buildings[current_tile] - 1] + buildings_cost[buildings[current_tile] - 1]), 0, number_format_decimal, number_format_thousand);
+					document.getElementById('container_current_expertise').innerHTML  = expertise[buildings[current_tile] - 1];
+					drawGame();
+					engine_ajax('research', (buildings[current_tile] - 1));
+				}
+			}
 			function getPosition(event) {
 				var x = new Number();
 				var y = new Number();
@@ -295,6 +313,8 @@
 				current_tile = (current_tile_Y*mapW)+current_tile_X;
 				var warehouse_content = document.getElementById('warehouse');
 				warehouse_content.style.display = 'none';
+				var statistics_content = document.getElementById('statistics');
+				statistics_content.style.display = 'none';				
 				var plot_options = document.getElementById('plot_options');
 				plot_options.innerHTML = '';
 				var plot_content = document.getElementById('plot');
@@ -320,7 +340,7 @@
 						}
 						available_building_cost = buildings_cost[i - 1];
 						if (available_building_title  != '')
-							plot_options.innerHTML = plot_options.innerHTML + "<tr><td align='left'>&nbsp;" + available_building_title + "&nbsp;</td><td align='left'>" + available_building_commodity + "&nbsp;</td><td align='center'>" + available_building_cost + "</td><td colspan='2' id='container_button_build_" + i + "'>" + "</td></tr>";
+							plot_options.innerHTML = plot_options.innerHTML + "<tr><td align='left'>&nbsp;" + available_building_title + "&nbsp;</td><td align='left'>" + available_building_commodity + "&nbsp;</td><td align='center'>" + number_format(available_building_cost, 0, number_format_decimal, number_format_thousand) + "</td><td colspan='2' id='container_button_build_" + i + "'>" + "</td></tr>";
 					}
 					for(let i = 1; i <= products_total; i++) {
 						var element =  document.getElementById('container_button_build_' + i);
@@ -350,7 +370,8 @@
 						available_building_title = "<img src='800" + buildings[current_tile] + ".png' title='" + buildings_titles[buildings[current_tile]-1] + "'>&nbsp;" + buildings_titles[buildings[current_tile]-1];
 						available_building_commodity = "<img src='810" + buildings[current_tile] + ".png' title='" + products_titles[buildings[current_tile]-1] + "'>&nbsp;" + products_titles[buildings[current_tile]-1];
 					}
-					plot_options.innerHTML = plot_options.innerHTML + "<tr><td align='left'>&nbsp;" + available_building_title + "&nbsp;</td><td align='center'>" + available_building_commodity + "&nbsp;</td><td align='center'>" + available_building_cost + "</td><td colspan='2' id='container_button_demolish'>" + "</td></tr>";
+					available_expertise_cost = Math.floor(expertise[buildings[current_tile] - 1]*buildings_cost[buildings[current_tile] - 1] + buildings_cost[buildings[current_tile] - 1]);
+					plot_options.innerHTML = plot_options.innerHTML + "<tr><td align='left'>&nbsp;" + available_building_title + "&nbsp;</td><td align='center'>" + available_building_commodity + "&nbsp;</td><td align='center'>" + number_format(available_building_cost, 0, number_format_decimal, number_format_thousand) + "</td><td colspan='2' id='container_button_demolish'>" + "</td></tr>" + "<tr><td><br></td></tr><tr><td>[@expertise_type]</td><td align='center'>[@level]</td><td>[@cost]</td></tr><tr><td>" + available_building_commodity + "</td><td align='center' id='container_current_expertise'>" + expertise[buildings[current_tile] - 1] + "</td><td id='container_current_expertise_cost'>" + number_format((expertise[buildings[current_tile] - 1]*buildings_cost[buildings[current_tile] - 1] + buildings_cost[buildings[current_tile] - 1]), 0, number_format_decimal, number_format_thousand) + "</td><td colspan='2' id='container_button_expertise'></td></tr>";
 					if (available_building_cost < money) {
 						var button_demolish = document.createElement('button');
 						button_demolish.classList.add('button_short');
@@ -361,6 +382,16 @@
 						button_demolish.onclick = function() { plot_demolish(current_tile); };
 						document.getElementById('container_button_demolish').appendChild(button_demolish);
 					}
+					if (available_expertise_cost < money) {
+						var button_expertise = document.createElement('button');
+						button_expertise.classList.add('button_short');
+						button_expertise.id ='button_expertise';
+						button_expertise.name ='button_expertise';
+						button_expertise.title = '[@research]';
+						button_expertise.innerHTML = '<img src=\'70013.png\' title=\'[@research]\'>';
+						button_expertise.onclick = function() { plot_research(current_tile); };
+						document.getElementById('container_button_expertise').appendChild(button_expertise);
+					}
 				}
 			};
 		</script>
@@ -369,7 +400,7 @@
 	</head>
 	<body>
 		<center>
-			<canvas id='map' width='640' height='640'>1</canvas>
+			<canvas id='map' width='640' height='640'></canvas>
 			<br>
 			<div class='menu_information'>
 				<div class='menu_item_information'>
@@ -382,8 +413,9 @@
 				&nbsp;&nbsp;
 				<button class='button_blue_short' onclick="view_manual();" title='[@manual]'><img src='70011.png' title='[@manual]'></button>
 				<button class='button_red_short' onclick="logoff();" title='[@logoff]'><img src='70005.png' title='[@logoff]'></button>
-				<br>
-				<br>
+			</div>
+			<br>
+			<div class='menu_information'>
 				<div class='menu_item_information'>
 					<img src='70004.png' title='[@treasury]'>
 					<span id='money_amount'></span>
@@ -537,6 +569,20 @@
 									<table>
 										[@statistics_citizens_summary]
 									<table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									&nbsp;
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<b>
+										[@statistics_experience]
+									</b>
+									<hr>
+									[@statistics_citizen_experience_summary]
 								</td>
 							</tr>
 							<tr>

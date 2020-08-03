@@ -116,6 +116,18 @@
 				$GM->set_record('buildings', $buildings_update);
 			}
 			$GM->set_record('demolitions', $GM->get_record('demolitions')+1);
+		} else if ($action == 'research') {
+			$current_money = $GM->get_record('money');
+			$buildings_cost = explode(",", $GM->get_record('buildings_cost'));
+			$current_expertise = $action_parameters;
+			$expertise = explode(",", $GM->get_record('expertise'));
+			$current_expertise_cost = floor($expertise[$current_expertise]*$buildings_cost[$current_expertise] + $buildings_cost[$current_expertise]);
+			if ($current_money - $current_expertise_cost > 0) {				
+				$GM->set_record('money', $current_money - $current_expertise_cost);
+				$expertise[$current_expertise] = $expertise[$current_expertise] + 1;
+				$expertise_update = implode(',', $expertise);
+				$GM->set_record('expertise', $expertise_update);
+			}
 		}
 	} else {
 		echo 'logoff';
