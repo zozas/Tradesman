@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 03, 2020 at 12:22 PM
+-- Generation Time: Aug 10, 2020 at 07:50 AM
 -- Server version: 10.4.13-MariaDB
 -- PHP Version: 7.4.7
 
@@ -42,6 +42,7 @@ CREATE TABLE `log` (
   `expertise` text NOT NULL,
   `year` int(11) NOT NULL,
   `end` int(11) NOT NULL,
+  `duration` int(11) NOT NULL,
   `money` int(11) NOT NULL,
   `citizens` int(11) NOT NULL,
   `demolish_cost` int(11) NOT NULL,
@@ -52,19 +53,12 @@ CREATE TABLE `log` (
   `score` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `online`
---
 
 CREATE TABLE `online` (
   `user_id` int(11) NOT NULL,
   `session` char(100) NOT NULL DEFAULT '',
   `time` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
 
 --
 -- Table structure for table `users`
@@ -85,6 +79,7 @@ CREATE TABLE `users` (
   `expertise` text NOT NULL,
   `year` int(11) NOT NULL,
   `end` int(11) NOT NULL,
+  `duration` int(11) NOT NULL,
   `money` int(11) NOT NULL,
   `citizens` int(11) NOT NULL,
   `demolish_cost` int(11) NOT NULL,
@@ -94,10 +89,6 @@ CREATE TABLE `users` (
   `difficulty` int(11) NOT NULL,
   `score` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Indexes for dumped tables
---
 
 --
 -- Indexes for table `log`
@@ -119,15 +110,11 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `log`
 --
 ALTER TABLE `log`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

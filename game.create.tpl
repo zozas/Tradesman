@@ -117,6 +117,24 @@
 							</tr>
 							<tr>
 								<td align='right'>
+									[@duration_round]
+									<br>
+									&nbsp;
+								</td>
+								<td>
+									&nbsp;
+								</td>
+								<td>
+									<input type='range' min='1' max='[@duration_round_max]' value='[@duration_round_default]' class='slider' id='login_duration' name='login_duration'>
+									<br>
+									<small>
+										<span id='login_duration_range'></span>
+										[@minutes]
+									</small>
+								</td>
+							</tr>
+							<tr>
+								<td align='right'>
 									[@money_range]
 									<br>
 									&nbsp;
@@ -268,6 +286,12 @@
 				output_login_mountain.innerHTML = slider_login_mountain.value;
 				slider_login_mountain.oninput = function() {
 					output_login_mountain.innerHTML = number_format(this.value, 0, '.', ',');
+				}
+				var slider_login_duration = document.getElementById('login_duration');
+				var output_login_duration = document.getElementById('login_duration_range');
+				output_login_duration.innerHTML = slider_login_duration.value;
+				slider_login_duration.oninput = function() {
+					output_login_duration.innerHTML = number_format(this.value, 0, '.', ',');
 				}
 			</script>
 			<br>

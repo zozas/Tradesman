@@ -17,6 +17,9 @@
 			var expertise = [[@expertise]];
 			var money = [@money];
 			var tax = [@tax];
+			var duration_round = [@duration_round];
+			if (duration_round == 0)
+				duration_round = 999;
 			var demolish_cost = [@demolish_cost];
 			var products_titles = [[@products_titles]];
 			var products_total = [@products_total];
@@ -27,6 +30,7 @@
 			var mapW = 10;
 			var mapH = 10;
 			document.addEventListener('DOMContentLoaded', init, false);
+			setInterval(view_next, duration_round*60000);
 			function init() {
 				var canvas = document.getElementById('map');
 				canvas.addEventListener('mousedown', getPosition, false);
@@ -36,6 +40,8 @@
 				plot_content.style.display = 'none';
 				var statistics_content = document.getElementById('statistics');
 				statistics_content.style.display = 'none';
+				var ingame_manual_content = document.getElementById('manual_content');
+				ingame_manual_content.style.display = 'none';
 				window.addEventListener('resize', resize, false);
 				var total_treasury = 0;
 				var i;
@@ -73,8 +79,9 @@
 				canvas.style.height = (height-92) + 'px';
 			};
 			function view_warehouse() {
+				var ingame_manual_content = document.getElementById('manual_content');
+				ingame_manual_content.style.display = 'none';
 				var plot_content = document.getElementById('plot');
-				plot_content.style.display = 'none';
 				var statistics_content = document.getElementById('statistics');
 				statistics_content.style.display = 'none';
 				var warehouse_content = document.getElementById('warehouse');
@@ -87,8 +94,9 @@
 				}
 			};
 			function view_statistics() {
+				var ingame_manual_content = document.getElementById('manual_content');
+				ingame_manual_content.style.display = 'none';
 				var plot_content = document.getElementById('plot');
-				plot_content.style.display = 'none';
 				var warehouse_content = document.getElementById('warehouse');
 				warehouse_content.style.display = 'none';
 				var statistics_content = document.getElementById('statistics');
@@ -100,12 +108,24 @@
 					plot_content.scrollIntoView(true);
 				}
 			};
+			function view_manual() {
+				var plot_content = document.getElementById('plot');
+				var warehouse_content = document.getElementById('warehouse');
+				warehouse_content.style.display = 'none';
+				var statistics_content = document.getElementById('statistics');
+				statistics_content.style.display = 'none';
+				var manual_content = document.getElementById('manual_content');
+				if (manual_content.style.display === 'none') {
+					manual_content.style.display = 'block';
+					manual_content.scrollIntoView(true);
+				} else {
+					manual_content.style.display = 'none';
+					plot_content.scrollIntoView(true);
+				}
+			}			
 			function view_next() {
 				window.location = "game.php?action=interval";
 			};
-			function view_manual() {
-				window.open("index.php?action=manual", "_blank");
-			}
 			function number_format(number, decimals, dec_point, thousands_sep) {
 				var n = !isFinite(+number) ? 0 : +number, prec = !isFinite(+decimals) ? 0 : Math.abs(decimals), sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep, dec = (typeof dec_point === 'undefined') ? '.' : dec_point, toFixedFix = function (n, prec) {
 					var k = Math.pow(10, prec);
@@ -242,6 +262,8 @@
 							plot_content.style.display = 'none';
 							var statistics_content = document.getElementById('statistics');
 							statistics_content.style.display = 'none';
+							var ingame_manual_content = document.getElementById('manual_content');
+							ingame_manual_content.style.display = 'none';
 							money = money - buildings_cost[building_type - 1];
 							var total_treasury = 0;
 							var i;
@@ -263,6 +285,8 @@
 						plot_content.style.display = 'none';
 						var statistics_content = document.getElementById('statistics');
 						statistics_content.style.display = 'none';
+						var ingame_manual_content = document.getElementById('manual_content');
+						ingame_manual_content.style.display = 'none';
 						money = money - demolision_cost;
 						var total_treasury = 0;
 						var i;
@@ -314,7 +338,9 @@
 				var warehouse_content = document.getElementById('warehouse');
 				warehouse_content.style.display = 'none';
 				var statistics_content = document.getElementById('statistics');
-				statistics_content.style.display = 'none';				
+				statistics_content.style.display = 'none';			
+				var ingame_manual_content = document.getElementById('manual_content');
+				ingame_manual_content.style.display = 'none';
 				var plot_options = document.getElementById('plot_options');
 				plot_options.innerHTML = '';
 				var plot_content = document.getElementById('plot');
@@ -393,6 +419,7 @@
 						document.getElementById('container_button_expertise').appendChild(button_expertise);
 					}
 				}
+				plot_options.scrollIntoView(true);
 			};
 		</script>
 		<link rel='stylesheet' type='text/css' href='game.css'>
@@ -409,9 +436,9 @@
 				</div>
 				<button class='button_short' onclick="view_warehouse();" title='[@warehouse_content]'><img src='70001.png' title='[@warehouse_content]'></button>
 				<button class='button_short' onclick="view_statistics();" title='[@statistics_content]'><img src='70012.png' title='[@statistics_content]'></button>
+				<button class='button_short' onclick="view_manual();" title='[@manual]'><img src='70011.png' title='[@manual]'></button>
 				<button class='button_short' onclick="view_next();" title='[@continue]'><img src='70010.png' title='[@continue]'></button>
 				&nbsp;&nbsp;
-				<button class='button_blue_short' onclick="view_manual();" title='[@manual]'><img src='70011.png' title='[@manual]'></button>
 				<button class='button_red_short' onclick="logoff();" title='[@logoff]'><img src='70005.png' title='[@logoff]'></button>
 			</div>
 			<br>
@@ -516,6 +543,11 @@
 						</tfoot>
 					</table>
 				</div>
+			</div>
+			<div id='manual_content' width='320' height='320'>
+				<br>
+				<br>
+				[@ingame_manual]
 			</div>
 			<div id='statistics' width='320' height='320'>
 				<br>

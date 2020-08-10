@@ -1,9 +1,9 @@
 <?php
-	// Initialize
+	// 'GENERAL'
 	ini_set('display_errors', 'On');
 	//error_reporting(E_ALL | E_STRICT);
 	session_start();
-	// Initialize
+	// 'GENERAL'
 	// CFG, SES, LNG
 	require_once('engine.php');
 	$CFG = new ini;
@@ -37,7 +37,7 @@
 		$login_password = $SES->get('USER_PASSWORD');
 	$USR->set_name($login_username);
 	$USR->set_password($login_password);
-	// Initialize actions
+	// 'GENERAL' actions
 	$action = '';
 	if (isset($_POST['action']))
 		$action = $_POST['action'];
@@ -66,16 +66,20 @@
 		$TPL_METATAGS->set('keywords', $CFG->get('APPLICATION','KEYWORDS'));
 		$TPL_METATAGS->set('description', $CFG->get('APPLICATION','DESCRIPTION'));
 		$TPL->set('metatags', $TPL_METATAGS->get());
-		$TPL->set('configure_new', $LNG->get('MENU','configure_new'));
-		$TPL->set('return', $LNG->get('MENU','return'));
-		$TPL->set('create', $LNG->get('MENU','create'));		
-		$TPL->set('username', $LNG->get('MENU','username'));
-		$TPL->set('userpassword', $LNG->get('MENU','userpassword'));
-		$TPL->set('useremail', $LNG->get('MENU','useremail'));
-		$TPL->set('city', $LNG->get('MENU','city'));
-		$TPL->set('reign_range', $LNG->get('MENU','reign_range'));
-		$TPL->set('reign_range_info', $LNG->get('MENU','reign_range_info'));
-		$TPL->set('days', $LNG->get('MENU','days'));
+		$TPL->set('configure_new', $LNG->get('GENERAL','configure_new'));
+		$TPL->set('return', $LNG->get('GENERAL','return'));
+		$TPL->set('create', $LNG->get('GENERAL','create'));		
+		$TPL->set('username', $LNG->get('GENERAL','username'));
+		$TPL->set('userpassword', $LNG->get('GENERAL','userpassword'));
+		$TPL->set('useremail', $LNG->get('GENERAL','useremail'));
+		$TPL->set('city', $LNG->get('GENERAL','city'));
+		$TPL->set('reign_range', $LNG->get('GENERAL','reign_range'));
+		$TPL->set('reign_range_info', $LNG->get('GENERAL','reign_range_info'));
+		$TPL->set('duration_round', $LNG->get('GENERAL','duration_round'));
+		$TPL->set('minutes', $LNG->get('GENERAL','minutes'));
+		$TPL->set('duration_round_max', $CFG->get('GAME','DURATION_ROUND_MAX'));
+		$TPL->set('duration_round_default', $CFG->get('GAME','DURATION_ROUND_DEFAULT'));
+		$TPL->set('days', $LNG->get('GENERAL','days'));
 		$TPL->set('duration_max', $CFG->get('GAME','DURATION_MAX'));
 		$TPL->set('duration_default', $CFG->get('GAME','DURATION_DEFAULT'));
 		$TPL->set('money_max', $CFG->get('GAME','MONEY_MAX'));
@@ -88,16 +92,16 @@
 		$TPL->set('mountains_default', $CFG->get('GAME','MOUNTAINS_DEFAULT'));	
 		$TPL->set('difficulty_max', $CFG->get('GAME','DIFFICULTY_MAX'));
 		$TPL->set('difficulty_default', $CFG->get('GAME','DIFFICULTY_DEFAULT'));			
-		$TPL->set('money', $LNG->get('MENU','money'));
-		$TPL->set('money_range', $LNG->get('MENU','money_range'));
-		$TPL->set('citizens', $LNG->get('MENU','citizens'));
-		$TPL->set('citizens_range', $LNG->get('MENU','citizens_range'));		
-		$TPL->set('landmass', $LNG->get('MENU','landmass'));
-		$TPL->set('landmass_range', $LNG->get('MENU','landmass_range'));		
-		$TPL->set('difficulty', $LNG->get('MENU','difficulty'));
-		$TPL->set('difficulty_range', $LNG->get('MENU','difficulty_range'));
-		$TPL->set('mountain', $LNG->get('MENU','mountain'));
-		$TPL->set('mountain_range', $LNG->get('MENU','mountain_range'));
+		$TPL->set('money', $LNG->get('GENERAL','money'));
+		$TPL->set('money_range', $LNG->get('GENERAL','money_range'));
+		$TPL->set('citizens', $LNG->get('GENERAL','citizens'));
+		$TPL->set('citizens_range', $LNG->get('GENERAL','citizens_range'));		
+		$TPL->set('landmass', $LNG->get('GENERAL','landmass'));
+		$TPL->set('landmass_range', $LNG->get('GENERAL','landmass_range'));		
+		$TPL->set('difficulty', $LNG->get('GENERAL','difficulty'));
+		$TPL->set('difficulty_range', $LNG->get('GENERAL','difficulty_range'));
+		$TPL->set('mountain', $LNG->get('GENERAL','mountain'));
+		$TPL->set('mountain_range', $LNG->get('GENERAL','mountain_range'));
 		$TPL->set('application_title', $CFG->get('APPLICATION','TITLE'));
 		$TPL->set('application_subtitle', preg_replace('/\s+/', '&nbsp;&middot;&nbsp;', $CFG->get('APPLICATION','SUBTITLE')));
 		$TPL_COPYRIGHT = new template;
@@ -131,8 +135,8 @@
 		$TPL_METATAGS->set('keywords', $CFG->get('APPLICATION','KEYWORDS'));
 		$TPL_METATAGS->set('description', $CFG->get('APPLICATION','DESCRIPTION'));
 		$TPL->set('metatags', $TPL_METATAGS->get());
-		$TPL->set('highscores', $LNG->get('MENU','highscores'));
-		$TPL->set('return', $LNG->get('MENU','return'));
+		$TPL->set('highscores', $LNG->get('GENERAL','highscores'));
+		$TPL->set('return', $LNG->get('GENERAL','return'));
 		$GM = new game(0);
 		$highscores_entries = $GM->get_games_played();
 		if ($highscores_entries > $CFG->get('GAME','HIGHSCORES'))
@@ -234,8 +238,13 @@
 		else
 			if (isset($_GET['login_mountain']))
 				$login_mountain = $_GET['login_mountain'];
+		if (isset($_POST['login_duration']))
+			$login_duration = $_POST['login_duration'];
+		else
+			if (isset($_GET['login_duration']))
+				$login_duration = $_GET['login_duration'];
 		$GM = new game(0);
-		$new_user = $GM->create($login_username, $login_password, $login_email, $login_city, $login_end, $login_money, $login_citizens, $login_landmass, $login_difficulty, $login_mountain);
+		$new_user = $GM->create($login_username, $login_password, $login_email, $login_city, $login_end, $login_money, $login_citizens, $login_landmass, $login_difficulty, $login_mountain, $login_duration);
 		if ($new_user > 0) {
 			$SES->set('USER_NAME', $login_username);
 			$SES->set('USER_PASSWORD', $login_password);
@@ -243,37 +252,6 @@
 		} else {
 			echo "<script>window.location.replace('index.php');</script>";
 		}
-	} else if ($action == 'manual') {
-		$TPL = new template;
-		$TPL->open($LNG->get('CONFIG','manual'));
-		$TPL_METATAGS = new template;
-		$TPL_METATAGS->open('game.meta.tpl');
-		$TPL_METATAGS->set('charset', $LNG->get('CONFIG','charset'));
-		$TPL_METATAGS->set('author', $CFG->get('APPLICATION','AUTHOR'));
-		$TPL_METATAGS->set('contact', $CFG->get('APPLICATION','CONTACT'));
-		$TPL_METATAGS->set('google', $CFG->get('APPLICATION','GOOGLE'));
-		$TPL_METATAGS->set('distribution', $CFG->get('APPLICATION','DISTRIBUTION'));
-		$TPL_METATAGS->set('robots', $CFG->get('APPLICATION','ROBOTS'));
-		$TPL_METATAGS->set('robots', $CFG->get('APPLICATION','ROBOTS'));
-		$TPL_METATAGS->set('copyright', 'Copyright &copy; '.$CFG->get('APPLICATION','COPYRIGHT').' '.$CFG->get('APPLICATION','AUTHOR').'. Released under '.$CFG->get('APPLICATION','COPYRIGHT').'.');
-		$TPL_METATAGS->set('viewport', $CFG->get('APPLICATION','VIEWPORT'));
-		$TPL_METATAGS->set('xua', $CFG->get('APPLICATION','XUA'));
-		$TPL_METATAGS->set('type', $CFG->get('APPLICATION','TYPE'));
-		$TPL_METATAGS->set('product', $CFG->get('APPLICATION','PRODUCT'));
-		$TPL_METATAGS->set('keywords', $CFG->get('APPLICATION','KEYWORDS'));
-		$TPL_METATAGS->set('description', $CFG->get('APPLICATION','DESCRIPTION'));
-		$TPL->set('metatags', $TPL_METATAGS->get());
-		$TPL->set('application_title', $CFG->get('APPLICATION','TITLE'));
-		$TPL->set('application_subtitle', preg_replace('/\s+/', '&nbsp;&middot;&nbsp;', $CFG->get('APPLICATION','SUBTITLE')));
-		$TPL_COPYRIGHT = new template;
-		$TPL_COPYRIGHT->open('game.copyright.tpl');
-		$TPL_COPYRIGHT->set('application_product', $CFG->get('APPLICATION','PRODUCT'));
-		$TPL_COPYRIGHT->set('application_version', $CFG->get('APPLICATION','VERSION'));
-		$TPL_COPYRIGHT->set('application_author', $CFG->get('APPLICATION','AUTHOR'));
-		$TPL_COPYRIGHT->set('application_deployment', $CFG->get('APPLICATION','DEPLOYMENT'));
-		$TPL_COPYRIGHT->set('application_copyright', $CFG->get('APPLICATION','COPYRIGHT'));
-		$TPL->set('application_copyright', $TPL_COPYRIGHT->get());
-		echo $TPL->get();
 	} else {
 		$SES->erase_session();
 		$SES->erase_session();
@@ -297,19 +275,19 @@
 		$TPL_METATAGS->set('description', $CFG->get('APPLICATION','DESCRIPTION'));
 		$TPL->set('metatags', $TPL_METATAGS->get());
 		$TPL->set('application_title', $CFG->get('APPLICATION','TITLE'));
-		$TPL->set('new_game', $LNG->get('MENU','new_game'));
-		$TPL->set('past_game', $LNG->get('MENU','past_game'));
-		$TPL->set('other', $LNG->get('MENU','other'));
-		$TPL->set('configure_new', $LNG->get('MENU','configure_new'));
-		$TPL->set('configure_new_info', $LNG->get('MENU','configure_new_info'));
-		$TPL->set('load', $LNG->get('MENU','load'));
-		$TPL->set('load_info', $LNG->get('MENU','load_info'));
-		$TPL->set('highscores', $LNG->get('MENU','highscores'));
-		$TPL->set('highscores_info', $LNG->get('MENU','highscores_info'));
-		$TPL->set('donate', $LNG->get('MENU','donate'));
-		$TPL->set('donation_info', $LNG->get('MENU','donation_info'));
-		$TPL->set('manual', $LNG->get('MENU','manual'));
-		$TPL->set('manual_info', $LNG->get('MENU','manual_info'));
+		$TPL->set('new_game', $LNG->get('GENERAL','new_game'));
+		$TPL->set('past_game', $LNG->get('GENERAL','past_game'));
+		$TPL->set('other', $LNG->get('GENERAL','other'));
+		$TPL->set('configure_new', $LNG->get('GENERAL','configure_new'));
+		$TPL->set('configure_new_info', $LNG->get('GENERAL','configure_new_info'));
+		$TPL->set('load', $LNG->get('GENERAL','load'));
+		$TPL->set('load_info', $LNG->get('GENERAL','load_info'));
+		$TPL->set('highscores', $LNG->get('GENERAL','highscores'));
+		$TPL->set('highscores_info', $LNG->get('GENERAL','highscores_info'));
+		$TPL->set('donate', $LNG->get('GENERAL','donate'));
+		$TPL->set('donation_info', $LNG->get('GENERAL','donation_info'));
+		$TPL->set('manual', $LNG->get('GENERAL','manual'));
+		$TPL->set('manual_info', $LNG->get('GENERAL','manual_info'));
 		$TPL->set('application_subtitle', preg_replace('/\s+/', '&nbsp;&middot;&nbsp;', $CFG->get('APPLICATION','SUBTITLE')));
 		$TPL_COPYRIGHT = new template;
 		$TPL_COPYRIGHT->open('game.copyright.tpl');

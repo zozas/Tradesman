@@ -1,9 +1,9 @@
 <?php
-	// Initialize
+	// 'GENERAL'
 	ini_set('display_errors', 'On');
 	//error_reporting(E_ALL | E_STRICT);
 	session_start();
-	// Initialize
+	// 'GENERAL'
 	// CFG, SES, LNG
 	require_once('engine.php');
 	$CFG = new ini;
@@ -37,7 +37,7 @@
 		$login_password = $SES->get('USER_PASSWORD');
 	$USR->set_name($login_username);
 	$USR->set_password($login_password);
-	// Initialize actions
+	// 'GENERAL' actions
 	$action = '';
 	if (isset($_POST['action']))
 		$action = $_POST['action'];
@@ -78,21 +78,21 @@
 			$TPL_COPYRIGHT->set('application_deployment', $CFG->get('APPLICATION','DEPLOYMENT'));
 			$TPL_COPYRIGHT->set('application_copyright', $CFG->get('APPLICATION','COPYRIGHT'));
 			$TPL->set('application_copyright', $TPL_COPYRIGHT->get());
-			$TPL->set('logoff', $LNG->get('MENU','logoff'));
+			$TPL->set('logoff', $LNG->get('GENERAL','logoff'));
 			$TPL->set('continue', $LNG->get('GENERAL','continue'));
 			$TPL->set('delete', $LNG->get('GENERAL','delete'));
 			$TPL->set('id', $SES->get('USER_ID'));
 			$GM = new game($SES->get('USER_ID'));
 			$TPL->set('city', $GM->get_record('city'));
-			$TPL->set('season_days', '<i>'.$GM->get_record('year').'&nbsp;'.$LNG->get('SUMMARY','season_days_past').'</i>');
+			$TPL->set('season_days', '<i>'.$GM->get_record('year').'&nbsp;'.$LNG->get('GENERAL','season_days_past').'</i>');
 			$date = new DateTime('1492-10-10');
 			$interval = new DateInterval('P'.$GM->get_record('year').'D');
 			$date->add($interval);
-			$TPL->set('warehouse', $LNG->get('MENU','warehouse'));
+			$TPL->set('warehouse', $LNG->get('GENERAL','warehouse'));
 			$TPL->set('year', $date->format($LNG->get('CONFIG','date_format')));
 			$TPL->set('season', $LNG->get('GENERAL','season'));
 			$TPL->set('treasury', $LNG->get('GENERAL','treasury'));
-			$TPL->set('tax', $LNG->get('SUMMARY','tax'));
+			$TPL->set('tax', $LNG->get('GENERAL','tax'));
 			$TPL->set('total_tax', $GM->get_record('tax'). ' %');
 			$warehouse_items = explode(',', $GM->get_record('warehouse'));
 			$warehouse_prices = explode(',', $GM->get_record('prices'));
@@ -111,7 +111,7 @@
 				if ($buildings[$i - 1] > 0)
 					$total_buildings = $total_buildings + 1;
 			}
-			$TPL->set('buildings', $LNG->get('SUMMARY','build_total'));
+			$TPL->set('buildings', $LNG->get('GENERAL','build_total'));
 			$TPL->set('total_buildings', $total_buildings);
 			$TPL->set('production', $LNG->get('GENERAL','production'));
 			$production = '';
@@ -131,7 +131,7 @@
 				}
 			}
 			$TPL->set('products', $production);
-			$TPL->set('score', $LNG->get('MENU','score'));
+			$TPL->set('score', $LNG->get('GENERAL','score'));
 			$TPL->set('score_result', number_format($GM->get_record('score'), 2, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
 			echo $TPL->get();
 		} else {
@@ -139,8 +139,8 @@
 			$SES->erase_session();
 			$TPL = new template;
 			$TPL->open('game.login.tpl');
-			$TPL->set('return', $LNG->get('MENU','return'));
-			$TPL->set('remind', $LNG->get('MENU','remind'));
+			$TPL->set('return', $LNG->get('GENERAL','return'));
+			$TPL->set('remind', $LNG->get('GENERAL','remind'));
 			$TPL_METATAGS = new template;
 			$TPL_METATAGS->open('game.meta.tpl');
 			$TPL_METATAGS->set('charset', $LNG->get('CONFIG','charset'));
@@ -168,9 +168,9 @@
 			$TPL_COPYRIGHT->set('application_deployment', $CFG->get('APPLICATION','DEPLOYMENT'));
 			$TPL_COPYRIGHT->set('application_copyright', $CFG->get('APPLICATION','COPYRIGHT'));
 			$TPL->set('application_copyright', $TPL_COPYRIGHT->get());
-			$TPL->set('login', $LNG->get('MENU','login'));
-			$TPL->set('username', $LNG->get('MENU','username'));
-			$TPL->set('userpassword', $LNG->get('MENU','userpassword'));
+			$TPL->set('login', $LNG->get('GENERAL','login'));
+			$TPL->set('username', $LNG->get('GENERAL','username'));
+			$TPL->set('userpassword', $LNG->get('GENERAL','userpassword'));
 			echo $TPL->get();
 		}
 	} else if ($action == 'logout') {
@@ -178,8 +178,8 @@
 		$SES->erase_session();
 		$TPL = new template;
 		$TPL->open('game.login.tpl');
-		$TPL->set('return', $LNG->get('MENU','return'));
-		$TPL->set('remind', $LNG->get('MENU','remind'));
+		$TPL->set('return', $LNG->get('GENERAL','return'));
+		$TPL->set('remind', $LNG->get('GENERAL','remind'));
 		$TPL_METATAGS = new template;
 		$TPL_METATAGS->open('game.meta.tpl');
 		$TPL_METATAGS->set('charset', $LNG->get('CONFIG','charset'));
@@ -207,9 +207,9 @@
 		$TPL_COPYRIGHT->set('application_deployment', $CFG->get('APPLICATION','DEPLOYMENT'));
 		$TPL_COPYRIGHT->set('application_copyright', $CFG->get('APPLICATION','COPYRIGHT'));
 		$TPL->set('application_copyright', $TPL_COPYRIGHT->get());
-		$TPL->set('login', $LNG->get('MENU','login'));
-		$TPL->set('username', $LNG->get('MENU','username'));
-		$TPL->set('userpassword', $LNG->get('MENU','userpassword'));
+		$TPL->set('login', $LNG->get('GENERAL','login'));
+		$TPL->set('username', $LNG->get('GENERAL','username'));
+		$TPL->set('userpassword', $LNG->get('GENERAL','userpassword'));
 		echo $TPL->get();
 	} else if ($action == 'remind') {
 		$SES->erase_session();
@@ -243,10 +243,10 @@
 		$TPL_COPYRIGHT->set('application_deployment', $CFG->get('APPLICATION','DEPLOYMENT'));
 		$TPL_COPYRIGHT->set('application_copyright', $CFG->get('APPLICATION','COPYRIGHT'));
 		$TPL->set('application_copyright', $TPL_COPYRIGHT->get());
-		$TPL->set('return', $LNG->get('MENU','return'));
-		$TPL->set('remind', $LNG->get('MENU','remind'));
-		$TPL->set('send', $LNG->get('MENU','send'));
-		$TPL->set('email', $LNG->get('MENU','email'));
+		$TPL->set('return', $LNG->get('GENERAL','return'));
+		$TPL->set('remind', $LNG->get('GENERAL','remind'));
+		$TPL->set('send', $LNG->get('GENERAL','send'));
+		$TPL->set('email', $LNG->get('GENERAL','email'));
 		echo $TPL->get();
 	} else if ($action == 'delete') {
 		$id = '';
@@ -265,7 +265,7 @@
 		else
 			if (isset($_GET['login_email']))
 				$login_email = $_GET['login_email'];
-		$USR->reset_user($login_email, $CFG->get('APPLICATION','TITLE'), $CFG->get('APPLICATION','CONTACT'), $LNG->get('MENU','remind'));
+		$USR->reset_user($login_email, $CFG->get('APPLICATION','TITLE'), $CFG->get('APPLICATION','CONTACT'), $LNG->get('GENERAL','remind'));
 		echo "<script>window.location.replace('login.php');</script>";
 	} else {
 		if ($USR->validate() == true) {
@@ -298,22 +298,22 @@
 			$TPL_COPYRIGHT->set('application_deployment', $CFG->get('APPLICATION','DEPLOYMENT'));
 			$TPL_COPYRIGHT->set('application_copyright', $CFG->get('APPLICATION','COPYRIGHT'));
 			$TPL->set('application_copyright', $TPL_COPYRIGHT->get());
-			$TPL->set('logoff', $LNG->get('MENU','logoff'));
+			$TPL->set('logoff', $LNG->get('GENERAL','logoff'));
 			$TPL->set('continue', $LNG->get('GENERAL','continue'));
 			$TPL->set('delete', $LNG->get('GENERAL','delete'));
 			$TPL->set('id', $SES->get('USER_ID'));
 			$GM = new game($SES->get('USER_ID'));
 			$GM->load_session();
 			$TPL->set('city', $GM->get_record('city'));
-			$TPL->set('season_days', '<i>'.$GM->get_record('year').'&nbsp;'.$LNG->get('SUMMARY','season_days_past').'</i>');
+			$TPL->set('season_days', '<i>'.$GM->get_record('year').'&nbsp;'.$LNG->get('GENERAL','season_days_past').'</i>');
 			$date = new DateTime('1492-10-10');
 			$interval = new DateInterval('P'.$GM->get_record('year').'D');
 			$date->add($interval);
-			$TPL->set('warehouse', $LNG->get('MENU','warehouse'));
+			$TPL->set('warehouse', $LNG->get('GENERAL','warehouse'));
 			$TPL->set('year', $date->format($LNG->get('CONFIG','date_format')));
 			$TPL->set('season', $LNG->get('GENERAL','season'));
 			$TPL->set('treasury', $LNG->get('GENERAL','treasury'));
-			$TPL->set('tax', $LNG->get('SUMMARY','tax'));
+			$TPL->set('tax', $LNG->get('GENERAL','tax'));
 			$TPL->set('total_tax', $GM->get_record('tax'). ' %');
 			$warehouse_items = explode(',', $GM->get_record('warehouse'));
 			$warehouse_prices = explode(',', $GM->get_record('prices'));
@@ -332,7 +332,7 @@
 				if ($buildings[$i - 1] > 0)
 					$total_buildings = $total_buildings + 1;
 			}
-			$TPL->set('buildings', $LNG->get('SUMMARY','build_total'));
+			$TPL->set('buildings', $LNG->get('GENERAL','build_total'));
 			$TPL->set('total_buildings', $total_buildings);
 			$TPL->set('production', $LNG->get('GENERAL','production'));
 			$production = '';
@@ -352,15 +352,15 @@
 				}
 			}
 			$TPL->set('products', $production);
-			$TPL->set('score', $LNG->get('MENU','score'));
+			$TPL->set('score', $LNG->get('GENERAL','score'));
 			$TPL->set('score_result', number_format($GM->get_record('score'), 2, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
 			echo $TPL->get();
 		} else {
 			$SES->erase_session();
 			$TPL = new template;
 			$TPL->open('game.login.tpl');
-			$TPL->set('return', $LNG->get('MENU','return'));
-			$TPL->set('remind', $LNG->get('MENU','remind'));
+			$TPL->set('return', $LNG->get('GENERAL','return'));
+			$TPL->set('remind', $LNG->get('GENERAL','remind'));
 			$TPL_METATAGS = new template;
 			$TPL_METATAGS->open('game.meta.tpl');
 			$TPL_METATAGS->set('charset', $LNG->get('CONFIG','charset'));
@@ -388,9 +388,9 @@
 			$TPL_COPYRIGHT->set('application_copyright', $CFG->get('APPLICATION','COPYRIGHT'));
 			$TPL->set('application_copyright', $TPL_COPYRIGHT->get());
 			$TPL->set('application_subtitle', preg_replace('/\s+/', '&nbsp;&middot;&nbsp;', $CFG->get('APPLICATION','SUBTITLE')));
-			$TPL->set('login', $LNG->get('MENU','login'));
-			$TPL->set('username', $LNG->get('MENU','username'));
-			$TPL->set('userpassword', $LNG->get('MENU','userpassword'));
+			$TPL->set('login', $LNG->get('GENERAL','login'));
+			$TPL->set('username', $LNG->get('GENERAL','username'));
+			$TPL->set('userpassword', $LNG->get('GENERAL','userpassword'));
 			echo $TPL->get();
 		}
 	}

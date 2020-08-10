@@ -83,6 +83,9 @@
 			$TPL->set('metatags', $TPL_METATAGS->get());
 			$TPL->set('application_title', $CFG->get('APPLICATION','TITLE'));
 			$TPL->set('city', $GM->get_record('city'));
+			$TPL->set('season', $LNG->get('GENERAL','season'));
+			$TPL->set('continue', $LNG->get('GENERAL','continue'));
+			$TPL->set('continue_snap', $LNG->get('GENERAL','continue_snap'));
 			// Update year
 			$GM->set_record('year', $GM->get_record('year') + 1);
 			$TPL->set('number_format_decimal', $LNG->get('CONFIG','charset_decimal'));
@@ -90,16 +93,14 @@
 			$date = new DateTime('1492-10-10');
 			$interval = new DateInterval('P'.$GM->get_record('year').'D');
 			$date->add($interval);
-			$TPL->set('year', $date->format($LNG->get('CONFIG','date_format')).'&nbsp;<small>'.($GM->get_record('end') - $GM->get_record('year')).'</small>');
-			$TPL->set('season', $LNG->get('GENERAL','season'));
-			$TPL->set('continue', $LNG->get('GENERAL','continue'));
-			$TPL->set('summary_content', $LNG->get('SUMMARY','season_summary'));
-			$TPL->set('season_days', '<i><b>'.$GM->get_record('year').'</b>&nbsp;'.$LNG->get('SUMMARY','season_days_past').'</i>');
+			$TPL->set('year', $date->format($LNG->get('CONFIG','date_format')).'&nbsp;<small>'.($GM->get_record('end') - $GM->get_record('year')).'&times;'.$GM->get_record('duration').'</small>');
+			$TPL->set('summary_content', $LNG->get('GENERAL','season_summary'));
+			$TPL->set('season_days', '<i><b>'.$GM->get_record('year').'</b>&nbsp;'.$LNG->get('GENERAL','season_days_past').'</i>');
 			if($GM->get_record('end') != 0) {
 				if ($GM->get_record('end') - $GM->get_record('year') <= 0) {
 					$TPL->set('season_remain', '');
 				} else {
-					$TPL->set('season_remain', '<i><b>'.($GM->get_record('end') - $GM->get_record('year')).'</b>&nbsp;'.$LNG->get('SUMMARY','season_days_remain').'</i>');
+					$TPL->set('season_remain', '<i><b>'.($GM->get_record('end') - $GM->get_record('year')).'</b>&nbsp;'.$LNG->get('GENERAL','season_days_remain').'</i>');
 				}
 			} else {
 				$TPL->set('season_remain', '');
@@ -162,9 +163,9 @@
 				$speciality = 1;
 			$speciality = number_format($speciality, 2, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal'));
 			if ($production_warnings == '')
-				$production_warnings = '<br>'.$LNG->get('SUMMARY','good_reduced_production').' : <b>0</b><table>';
+				$production_warnings = '<br>'.$LNG->get('GENERAL','good_reduced_production').' : <b>0</b><table>';
 			else
-				$production_warnings = '<br>'.$LNG->get('SUMMARY','good_reduced_production').' :<br><table>'.$production_warnings;
+				$production_warnings = '<br>'.$LNG->get('GENERAL','good_reduced_production').' :<br><table>'.$production_warnings;
 			// Update tax
 			$current_tax = $GM->get_record('tax');
 			$tax_trend = 0;
@@ -184,7 +185,7 @@
 				$GM->set_record('tax', $current_tax);
 				$current_tax = $current_tax." %"." <span style='color:red;'>&or;</span>";
 			}
-			$TPL->set('production_summary', $LNG->get('SUMMARY','tax').' : <b>'.$current_tax. '</b><br>'.$LNG->get('GENERAL','speciality').' : <b>'.$speciality.'</b><br>'.$production_warnings.'</table>');
+			$TPL->set('production_summary', $LNG->get('GENERAL','tax').' : <b>'.$current_tax. '</b><br>'.$LNG->get('GENERAL','speciality').' : <b>'.$speciality.'</b><br>'.$production_warnings.'</table>');
 			$warehouse_items_update = implode(',', $warehouse_items);
 			$GM->set_record('warehouse', $warehouse_items_update);
 			$food_rations_available = $food_production_rate;
@@ -209,9 +210,22 @@
 				if ($citizens_available < 0)
 					$citizens_available = 0;
 				if ($citizens_available == 0)
-					$TPL->set('citizen_summary', $LNG->get('SUMMARY','citizens_decrease').'<br>'.$LNG->get('SUMMARY','citizens_decrease_rate').' <b>'.$citizens_decrease_rate.'</b> <small>(0%)</small>');
+					$TPL->set('citizen_summary', $LNG->get('GENERAL','citizens_decrease').'<br>'.$LNG->get('GENERAL','citizens_decrease_rate').' <b>'.$citizens_decrease_rate.'</b> <small>(0%)</small><br>'.$LNG->get('GENERAL','expertise_decrease'));
 				else
-					$TPL->set('citizen_summary', $LNG->get('SUMMARY','citizens_decrease').'<br>'.$LNG->get('SUMMARY','citizens_decrease_rate').' <b>'.$citizens_decrease_rate.'</b> <small>(-'.number_format(($citizens_decrease_rate/$citizens_available)*100, 0).'%)</small>');
+					$TPL->set('citizen_summary', $LNG->get('GENERAL','citizens_decrease').'<br>'.$LNG->get('GENERAL','citizens_decrease_rate').' <b>'.$citizens_decrease_rate.'</b> <small>(-'.number_format(($citizens_decrease_rate/$citizens_available)*100, 0).'%)</small><br>'.$LNG->get('GENERAL','expertise_decrease'));
+				// If citizens zero reduce expertise
+				if ($citizens_available == 0) {
+					$reduced_experience = false;
+					$citizen_experience = explode(',', $GM->get_record('expertise'));
+					for ($k = 1; $k <= $CFG->get('GAME','PRODUCTS'); $k++) {
+						if(($citizen_experience[$k - 1] > 0) && ($reduced_experience == false)) {
+							$citizen_experience[$k - 1] = $citizen_experience[$k - 1] - 1;
+							$citizen_experience_update = implode(',', $citizen_experience);
+							$GM->set_record('expertise', $citizen_experience_update);
+							$reduced_experience = true;
+						}
+					}					
+				}
 			} else if($citizens_available <= $food_rations_available) {
 				$food_rations_available = $food_rations_available - $citizens_available;
 				for ($j = 1; $j <= $CFG->get('GAME','PRODUCTS'); $j++) {
@@ -251,24 +265,25 @@
 				}
 				$citizens_increase_rate = 1;
 				$citizens_available = $citizens_available + $citizens_increase_rate;
-				$TPL->set('citizen_summary', $LNG->get('SUMMARY','citizens_increase').'<br>'.$LNG->get('SUMMARY','citizens_increase_rate').' <b>'.$citizens_increase_rate.'</b> <small>(+'.number_format(($citizens_increase_rate/$citizens_available)*100, 0).'%)</small>');
+				$TPL->set('citizen_summary', $LNG->get('GENERAL','citizens_increase').'<br>'.$LNG->get('GENERAL','citizens_increase_rate').' <b>'.$citizens_increase_rate.'</b> <small>(+'.number_format(($citizens_increase_rate/$citizens_available)*100, 0).'%)</small>');
 			} else {
-				if ($citizens_available == 0)
-					$TPL->set('citizen_summary', $LNG->get('SUMMARY','citizens_dead').'<br>'.$LNG->get('SUMMARY','citizens_dead_rate'));
-				else
-					$TPL->set('citizen_summary', $LNG->get('SUMMARY','citizens_stall').'<br>'.$LNG->get('SUMMARY','citizens_stall_rate'));
+				if ($citizens_available == 0) {
+					$TPL->set('citizen_summary', $LNG->get('GENERAL','citizens_dead').'<br>'.$LNG->get('GENERAL','citizens_dead_rate'));
+				} else {
+					$TPL->set('citizen_summary', $LNG->get('GENERAL','citizens_stall').'<br>'.$LNG->get('GENERAL','citizens_stall_rate'));
+				}
 			}
 			// Food
 			$TPL->set('food', $LNG->get('GENERAL','food'));
 			$food_summary = '';
 			if (($food_rations_available+$food_production_rate-$citizens_available)>0) {
-				$food_summary =  $LNG->get('SUMMARY','food_surplus').' <b>+'.($food_rations_available+$food_production_rate-$citizens_available).'</b>';
+				$food_summary =  $LNG->get('GENERAL','food_surplus').' <b>+'.($food_rations_available+$food_production_rate-$citizens_available).'</b>';
 			} else if (($food_rations_available+$food_production_rate-$citizens_available)<0) {
-				$food_summary =  $LNG->get('SUMMARY','food_sortage').' <b>'.($food_rations_available+$food_production_rate-$citizens_available).'</b>';
+				$food_summary =  $LNG->get('GENERAL','food_sortage').' <b>'.($food_rations_available+$food_production_rate-$citizens_available).'</b>';
 			} else {
-				$food_summary =  $LNG->get('SUMMARY','food_equilibrium');
+				$food_summary =  $LNG->get('GENERAL','food_equilibrium');
 			}
-			$TPL->set('food_summary', $food_summary.'<br><b>'.$food_production_rate.'</b> '.$LNG->get('SUMMARY','food_produced').'<br>'.'<b>'.$citizens_available.'</b> '.$LNG->get('SUMMARY','food_consumed').'<br>'.'<b>'.$food_rations_available.'</b> '.$LNG->get('SUMMARY','food_stored').'<br>');
+			$TPL->set('food_summary', $food_summary.'<br><b>'.$food_production_rate.'</b> '.$LNG->get('GENERAL','food_produced').'<br>'.'<b>'.$citizens_available.'</b> '.$LNG->get('GENERAL','food_consumed').'<br>'.'<b>'.$food_rations_available.'</b> '.$LNG->get('GENERAL','food_stored').'<br>');
 			$GM->set_record('citizens', $citizens_available);
 			$warehouse_items_update = implode(',', $warehouse_items);
 			$GM->set_record('warehouse', $warehouse_items_update);
@@ -277,7 +292,7 @@
 			$prices_exchange = explode(',', $GM->get_record('prices_exchange'));
 			$warehouse_items = explode(',', $GM->get_record('warehouse'));
 			$warehouse_prices = explode(',', $GM->get_record('prices'));
-			$TPL->set('warehouse_content', $LNG->get('MENU','warehouse')." & ".$LNG->get('GENERAL','commodities'));
+			$TPL->set('warehouse_content', $LNG->get('GENERAL','warehouse')." & ".$LNG->get('GENERAL','commodities'));
 			$TPL->set('warehouse', $GM->get_record('warehouse'));
 			$TPL->set('prices', $GM->get_record('prices'));
 			$TPL->set('warehouse_prices', $LNG->get('GENERAL','price'));
@@ -343,17 +358,17 @@
 				$build_factor = $builds / ($builds + $demolitions);
 				$demolition_factor = $demolitions / ($builds + $demolitions);
 			}
-			$build_status = $LNG->get('SUMMARY','build_unchanged');
+			$build_status = $LNG->get('GENERAL','build_unchanged');
 			$buildings_cost = explode(',', $GM->get_record('buildings_cost'));
 			if ($build_factor > 0.5) {
-				$build_status = $LNG->get('SUMMARY','build_increase');
+				$build_status = $LNG->get('GENERAL','build_increase');
 				for ($i = 0; $i <= ($CFG->get('GAME','PRODUCTS')-1); $i++) {
 					$buildings_cost[$i] = ceil($buildings_cost[$i] + (1 + $build_factor));
 					$buildings_cost_increased = implode(',', $buildings_cost);
 					$GM->set_record('buildings_cost', $buildings_cost_increased);
 				}
 			} else if ($build_factor < 0.5 && $build_factor > 0) {
-				$build_status = $LNG->get('SUMMARY','build_decrease');
+				$build_status = $LNG->get('GENERAL','build_decrease');
 				for ($i = 0; $i <= ($CFG->get('GAME','PRODUCTS')-1); $i++) {
 					$buildings_cost[$i] = $buildings_cost[$i];
 					$buildings_cost[$i] = ceil($buildings_cost[$i] - (1 + $build_factor));
@@ -363,17 +378,17 @@
 					$GM->set_record('buildings_cost', $buildings_cost_decreased);
 				}
 			}
-			$demolish_status = $LNG->get('SUMMARY','demolish_unchanged');
+			$demolish_status = $LNG->get('GENERAL','demolish_unchanged');
 			if ($demolition_factor > 0.5) {
-				$demolish_status = $LNG->get('SUMMARY','demolish_increase');
+				$demolish_status = $LNG->get('GENERAL','demolish_increase');
 				$GM->set_record('demolish_cost', floor($GM->get_record('demolish_cost')+1*$demolition_factor));
 			} else if ($demolition_factor < 0.5 && $demolition_factor > 0) {
-				$demolish_status = $LNG->get('SUMMARY','demolish_decrease');
+				$demolish_status = $LNG->get('GENERAL','demolish_decrease');
 				$GM->set_record('demolish_cost', floor($GM->get_record('demolish_cost')-1*$demolition_factor));
 			}
 			if($GM->get_record('demolish_cost') <= 0)
 				$GM->set_record('demolish_cost', 10);
-			$TPL->set('real_estate_summary', $LNG->get('SUMMARY','build_total').' : <b>'.$total_buildings.'</b><br>'.$LNG->get('SUMMARY','build_occupied_percent').' : <b>'.number_format((100*$total_buildings/$tilemap_size), 2, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')).'%</b><br>'.$LNG->get('SUMMARY','build_total_stats').' : <b>'.$GM->get_record('builds').'</b><br>'.$LNG->get('SUMMARY','demolish_total_stats').' : <b>'.$GM->get_record('demolitions').'</b><br><br>'.$LNG->get('SUMMARY','build_factor').' : <b>'.number_format(($build_factor), 2, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')).'</b><br>'.$build_status.'<br><br>'.$LNG->get('SUMMARY','demolish_cost').' : <b>'.$GM->get_record('builds').'</b><br>'.$LNG->get('SUMMARY','demolish_factor').' : <b>'.number_format(($demolition_factor), 2, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')).'</b><br>'.$demolish_status);
+			$TPL->set('real_estate_summary', $LNG->get('GENERAL','build_total').' : <b>'.$total_buildings.'</b><br>'.$LNG->get('GENERAL','build_occupied_percent').' : <b>'.number_format((100*$total_buildings/$tilemap_size), 2, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')).'%</b><br>'.$LNG->get('GENERAL','build_total_stats').' : <b>'.$GM->get_record('builds').'</b><br>'.$LNG->get('GENERAL','demolish_total_stats').' : <b>'.$GM->get_record('demolitions').'</b><br><br>'.$LNG->get('GENERAL','build_factor').' : <b>'.number_format(($build_factor), 2, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')).'</b><br>'.$build_status.'<br><br>'.$LNG->get('GENERAL','demolish_cost').' : <b>'.$GM->get_record('builds').'</b><br>'.$LNG->get('GENERAL','demolish_factor').' : <b>'.number_format(($demolition_factor), 2, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')).'</b><br>'.$demolish_status);
 
 
 
@@ -404,7 +419,7 @@
 			$TPL->set('money_amount', number_format($GM->get_record('money'), 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
 			$TPL->set('warehouse_amount', number_format($warehouse_amount, 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
 			// Calculate score
-			$TPL->set('score', $LNG->get('MENU','score'));
+			$TPL->set('score', $LNG->get('GENERAL','score'));
 			$TPL->set('score_result', number_format($GM->get_record('score'), 2, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
 			$score_result = (($GM->get_record('money') + $warehouse_amount)*((1 - $GM->get_record('tax'))/100) + ($GM->get_record('citizens')*1000) + ($total_buildings*500));
 			if ($GM->get_record('end') != 0)
@@ -417,9 +432,9 @@
 			// Statistics
 			$GM->load_session();
 			$statistics = $GM->statistics();
-			$TPL->set('statistics_content', $LNG->get('MENU','statistics'));
+			$TPL->set('statistics_content', $LNG->get('GENERAL','statistics'));
 				// Statistics - Score summary
-				$TPL->set('statistics_score', $LNG->get('MENU','score'));
+				$TPL->set('statistics_score', $LNG->get('GENERAL','score'));
 				$TPL_GRAPH = new template;
 				$TPL_GRAPH->open('game.graph.tpl');
 				$TPL_GRAPH->set('image', '');
@@ -430,10 +445,10 @@
 				$TPL_GRAPH->set('percent', number_format(100*($statistics['curent']['score'] - $statistics['historic']['score'])/($statistics['historic']['score'] +0.01), 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
 				$TPL->set('statistics_score_summary', $TPL_GRAPH->get());
 				// Statistics - Money summary
-				$TPL->set('statistics_money', $LNG->get('MENU','money'));
+				$TPL->set('statistics_money', $LNG->get('GENERAL','money'));
 				$TPL_GRAPH = new template;
 				$TPL_GRAPH->open('game.graph.tpl');
-				$TPL_GRAPH->set('image', $LNG->get('MENU','money_cash'));
+				$TPL_GRAPH->set('image', $LNG->get('GENERAL','money_cash'));
 				$TPL_GRAPH->set('start', 16*$statistics['historic']['money']['cash']/max(($statistics['historic']['money']['cash']+0.01), ($statistics['curent']['money']['cash']+0.01)));
 				$TPL_GRAPH->set('end', 16*$statistics['curent']['money']['cash']/max(($statistics['historic']['money']['cash']+0.01), ($statistics['curent']['money']['cash']+0.01)));
 				$TPL_GRAPH->set('historic', number_format($statistics['historic']['money']['cash'], 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
@@ -442,7 +457,7 @@
 				$money_cash = $TPL_GRAPH->get();
 				$TPL_GRAPH = new template;
 				$TPL_GRAPH->open('game.graph.tpl');
-				$TPL_GRAPH->set('image', $LNG->get('MENU','tax'));
+				$TPL_GRAPH->set('image', $LNG->get('GENERAL','tax'));
 				$TPL_GRAPH->set('start', 16*$statistics['historic']['tax']/max(($statistics['historic']['tax']+0.01), ($statistics['curent']['tax']+0.01)));
 				$TPL_GRAPH->set('end', 16*$statistics['curent']['tax']/max(($statistics['historic']['tax']+0.01), ($statistics['curent']['tax']+0.01)));
 				$TPL_GRAPH->set('historic', number_format($statistics['historic']['tax'], 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
@@ -451,10 +466,10 @@
 				$money_tax = $TPL_GRAPH->get();
 				$TPL->set('statistics_money_summary', $money_cash.$money_tax);
 				// Statistics - Citizens summary
-				$TPL->set('statistics_citizens', $LNG->get('MENU','citizens'));
+				$TPL->set('statistics_citizens', $LNG->get('GENERAL','citizens'));
 				$TPL_GRAPH = new template;
 				$TPL_GRAPH->open('game.graph.tpl');
-				$TPL_GRAPH->set('image', $LNG->get('MENU','citizens'));
+				$TPL_GRAPH->set('image', $LNG->get('GENERAL','citizens'));
 				$TPL_GRAPH->set('start', 16*$statistics['historic']['citizens']/max(($statistics['historic']['citizens']+0.01), ($statistics['curent']['citizens']+0.01)));
 				$TPL_GRAPH->set('end', 16*$statistics['curent']['citizens']/max(($statistics['historic']['citizens']+0.01), ($statistics['curent']['citizens']+0.01)));
 				$TPL_GRAPH->set('historic', number_format($statistics['historic']['citizens'], 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
@@ -473,13 +488,13 @@
 						}
 					}
 				}
-				$TPL->set('statistics_experience', $LNG->get('MENU','expertise'));
+				$TPL->set('statistics_experience', $LNG->get('GENERAL','expertise'));
 				$TPL->set('statistics_citizen_experience_summary', $experience);
 				// Statistics - Buildings summary
-				$TPL->set('statistics_buildings', $LNG->get('MENU','buildings'));
+				$TPL->set('statistics_buildings', $LNG->get('GENERAL','buildings'));
 				$TPL_GRAPH = new template;
 				$TPL_GRAPH->open('game.graph.tpl');
-				$TPL_GRAPH->set('image', $LNG->get('MENU','demolish_cost'));
+				$TPL_GRAPH->set('image', $LNG->get('GENERAL','demolish_cost'));
 				$TPL_GRAPH->set('start', 16*$statistics['historic']['demolish_cost']/max(($statistics['historic']['demolish_cost']+0.01), ($statistics['curent']['demolish_cost']+0.01)));
 				$TPL_GRAPH->set('end', 16*$statistics['curent']['demolish_cost']/max(($statistics['historic']['demolish_cost']+0.01), ($statistics['curent']['demolish_cost']+0.01)));
 				$TPL_GRAPH->set('historic', number_format($statistics['historic']['demolish_cost'], 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
@@ -504,7 +519,7 @@
 				}
 				$TPL->set('statistics_buildings_summary', $buildings_demolish_cost.$buildings_analytical);
 				// Statistics - Prices summary
-				$TPL->set('statistics_prices', $LNG->get('MENU','prices'));
+				$TPL->set('statistics_prices', $LNG->get('GENERAL','prices'));
 				$prices_analytical = '';
 				for ($i = 1; $i <= $CFG->get('GAME','PRODUCTS'); $i++) {
 					$TPL_GRAPH = new template;
@@ -560,18 +575,18 @@
 			$TPL->set('application_deployment', $CFG->get('APPLICATION','DEPLOYMENT'));
 			$TPL->set('application_copyright', $CFG->get('APPLICATION','COPYRIGHT'));
 			$TPL->set('application_product', $CFG->get('APPLICATION','PRODUCT'));
-			$TPL->set('logoff', $LNG->get('MENU','logoff'));
+			$TPL->set('logoff', $LNG->get('GENERAL','logoff'));
 			$GM = new game($SES->get('USER_ID'));
 			$TPL->set('city', $GM->get_record('city'));
-			$TPL->set('season_days', '<i>'.$GM->get_record('year').'&nbsp;'.$LNG->get('SUMMARY','season_days_past').'</i>');
+			$TPL->set('season_days', '<i>'.$GM->get_record('year').'&nbsp;'.$LNG->get('GENERAL','season_days_past').'</i>');
 			$date = new DateTime('1492-10-10');
 			$interval = new DateInterval('P'.$GM->get_record('year').'D');
 			$date->add($interval);
-			$TPL->set('warehouse', $LNG->get('MENU','warehouse'));
-			$TPL->set('year', $date->format($LNG->get('CONFIG','date_format')).'&nbsp;<small>'.($GM->get_record('end') - $GM->get_record('year')).'</small>');
+			$TPL->set('warehouse', $LNG->get('GENERAL','warehouse'));
+			$TPL->set('year', $date->format($LNG->get('CONFIG','date_format')).'&nbsp;<small>'.($GM->get_record('end') - $GM->get_record('year')).'&times;'.$GM->get_record('duration').'</small>');
 			$TPL->set('season', $LNG->get('GENERAL','season'));
 			$TPL->set('treasury', $LNG->get('GENERAL','treasury'));
-			$TPL->set('tax', $LNG->get('SUMMARY','tax'));
+			$TPL->set('tax', $LNG->get('GENERAL','tax'));
 			$TPL->set('total_tax', $GM->get_record('tax'). ' %');			
 			$warehouse_items = explode(',', $GM->get_record('warehouse'));
 			$warehouse_prices = explode(',', $GM->get_record('prices'));
@@ -590,7 +605,7 @@
 				if ($buildings[$i - 1] > 0)
 					$total_buildings = $total_buildings + 1;
 			}
-			$TPL->set('buildings', $LNG->get('SUMMARY','build_total'));
+			$TPL->set('buildings', $LNG->get('GENERAL','build_total'));
 			$TPL->set('total_buildings', $total_buildings);
 			$TPL->set('production', $LNG->get('GENERAL','production'));
 			$production = '';
@@ -611,7 +626,7 @@
 			}
 			$TPL->set('products', $production);
 			// Calculate score
-			$TPL->set('score', $LNG->get('MENU','score'));
+			$TPL->set('score', $LNG->get('GENERAL','score'));
 			$score_result = (($GM->get_record('money') + $warehouse_amount)*((1 - $GM->get_record('tax'))/100) + ($GM->get_record('citizens')*1000) + ($total_buildings*500));
 			if ($GM->get_record('end') != 0)
 				$score_result =  $score_result / ($GM->get_record('year') / $GM->get_record('end'));
@@ -623,9 +638,9 @@
 			// Statistics
 			$GM->load_session();
 			$statistics = $GM->statistics();
-			$TPL->set('statistics_content', $LNG->get('MENU','statistics'));
+			$TPL->set('statistics_content', $LNG->get('GENERAL','statistics'));
 				// Statistics - Score summary
-				$TPL->set('statistics_score', $LNG->get('MENU','score'));
+				$TPL->set('statistics_score', $LNG->get('GENERAL','score'));
 				$TPL_GRAPH = new template;
 				$TPL_GRAPH->open('game.graph.tpl');
 				$TPL_GRAPH->set('image', '');
@@ -636,10 +651,10 @@
 				$TPL_GRAPH->set('percent', number_format(100*($statistics['curent']['score'] - $statistics['historic']['score'])/($statistics['historic']['score'] +0.01), 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
 				$TPL->set('statistics_score_summary', $TPL_GRAPH->get());
 				// Statistics - Money summary
-				$TPL->set('statistics_money', $LNG->get('MENU','money'));
+				$TPL->set('statistics_money', $LNG->get('GENERAL','money'));
 				$TPL_GRAPH = new template;
 				$TPL_GRAPH->open('game.graph.tpl');
-				$TPL_GRAPH->set('image', $LNG->get('MENU','money_cash'));
+				$TPL_GRAPH->set('image', $LNG->get('GENERAL','money_cash'));
 				$TPL_GRAPH->set('start', 16*$statistics['historic']['money']['cash']/max(($statistics['historic']['money']['cash']+0.01), ($statistics['curent']['money']['cash']+0.01)));
 				$TPL_GRAPH->set('end', 16*$statistics['curent']['money']['cash']/max(($statistics['historic']['money']['cash']+0.01), ($statistics['curent']['money']['cash']+0.01)));
 				$TPL_GRAPH->set('historic', number_format($statistics['historic']['money']['cash'], 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
@@ -648,7 +663,7 @@
 				$money_cash = $TPL_GRAPH->get();
 				$TPL_GRAPH = new template;
 				$TPL_GRAPH->open('game.graph.tpl');
-				$TPL_GRAPH->set('image', $LNG->get('MENU','tax'));
+				$TPL_GRAPH->set('image', $LNG->get('GENERAL','tax'));
 				$TPL_GRAPH->set('start', 16*$statistics['historic']['tax']/max(($statistics['historic']['tax']+0.01), ($statistics['curent']['tax']+0.01)));
 				$TPL_GRAPH->set('end', 16*$statistics['curent']['tax']/max(($statistics['historic']['tax']+0.01), ($statistics['curent']['tax']+0.01)));
 				$TPL_GRAPH->set('historic', number_format($statistics['historic']['tax'], 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
@@ -657,10 +672,10 @@
 				$money_tax = $TPL_GRAPH->get();
 				$TPL->set('statistics_money_summary', $money_cash.$money_tax);
 				// Statistics - Citizens summary
-				$TPL->set('statistics_citizens', $LNG->get('MENU','citizens'));
+				$TPL->set('statistics_citizens', $LNG->get('GENERAL','citizens'));
 				$TPL_GRAPH = new template;
 				$TPL_GRAPH->open('game.graph.tpl');
-				$TPL_GRAPH->set('image', $LNG->get('MENU','citizens'));
+				$TPL_GRAPH->set('image', $LNG->get('GENERAL','citizens'));
 				$TPL_GRAPH->set('start', 16*$statistics['historic']['citizens']/max(($statistics['historic']['citizens']+0.01), ($statistics['curent']['citizens']+0.01)));
 				$TPL_GRAPH->set('end', 16*$statistics['curent']['citizens']/max(($statistics['historic']['citizens']+0.01), ($statistics['curent']['citizens']+0.01)));
 				$TPL_GRAPH->set('historic', number_format($statistics['historic']['citizens'], 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
@@ -679,13 +694,13 @@
 						}
 					}
 				}
-				$TPL->set('statistics_experience', $LNG->get('MENU','expertise'));
+				$TPL->set('statistics_experience', $LNG->get('GENERAL','expertise'));
 				$TPL->set('statistics_citizen_experience_summary', $experience);
 				// Statistics - Buildings summary
-				$TPL->set('statistics_buildings', $LNG->get('MENU','buildings'));
+				$TPL->set('statistics_buildings', $LNG->get('GENERAL','buildings'));
 				$TPL_GRAPH = new template;
 				$TPL_GRAPH->open('game.graph.tpl');
-				$TPL_GRAPH->set('image', $LNG->get('MENU','demolish_cost'));
+				$TPL_GRAPH->set('image', $LNG->get('GENERAL','demolish_cost'));
 				$TPL_GRAPH->set('start', 16*$statistics['historic']['demolish_cost']/max(($statistics['historic']['demolish_cost']+0.01), ($statistics['curent']['demolish_cost']+0.01)));
 				$TPL_GRAPH->set('end', 16*$statistics['curent']['demolish_cost']/max(($statistics['historic']['demolish_cost']+0.01), ($statistics['curent']['demolish_cost']+0.01)));
 				$TPL_GRAPH->set('historic', number_format($statistics['historic']['demolish_cost'], 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
@@ -710,7 +725,7 @@
 				}
 				$TPL->set('statistics_buildings_summary', $buildings_demolish_cost.$buildings_analytical);
 				// Statistics - Prices summary
-				$TPL->set('statistics_prices', $LNG->get('MENU','prices'));
+				$TPL->set('statistics_prices', $LNG->get('GENERAL','prices'));
 				$prices_analytical = '';
 				for ($i = 1; $i <= $CFG->get('GAME','PRODUCTS'); $i++) {
 					$TPL_GRAPH = new template;
@@ -740,6 +755,9 @@
 		//	
 		} else {
 			$GM->load_session();
+			if ($action == 'snap') {
+				$GM->snap();
+			}
 			$map = (string)$GM->get_record('map');
 			$buildings = (string)$GM->get_record('buildings');
 			$TPL = new template;
@@ -760,25 +778,29 @@
 			$TPL_METATAGS->set('product', $CFG->get('APPLICATION','PRODUCT'));
 			$TPL_METATAGS->set('keywords', $CFG->get('APPLICATION','KEYWORDS'));
 			$TPL_METATAGS->set('description', $CFG->get('APPLICATION','DESCRIPTION'));
-			$TPL->set('metatags', $TPL_METATAGS->get());
+			$TPL->set('metatags', $TPL_METATAGS->get());			
+			$TPL_MANUAL = new template;
+			$TPL_MANUAL->open($LNG->get('CONFIG','manual'));
+			$TPL->set('ingame_manual', $TPL_MANUAL->get());
 			$TPL->set('application_title', $CFG->get('APPLICATION','TITLE'));
 			$TPL->set('user_name', $SES->get('USER_NAME'));
 			$TPL->set('user_password', $SES->get('USER_PASSWORD'));
 			$TPL->set('city', $GM->get_record('city'));
 			$TPL->set('map', $map);
-			$TPL->set('logoff', $LNG->get('MENU','logoff'));
-			$TPL->set('manual', $LNG->get('MENU','manual'));
+			$TPL->set('logoff', $LNG->get('GENERAL','logoff'));
+			$TPL->set('manual', $LNG->get('GENERAL','manual'));
 			$TPL->set('money', $GM->get_record('money'));
 			$TPL->set('tax', $GM->get_record('tax'));
-			$TPL->set('taxation', $LNG->get('SUMMARY','tax').' '.$GM->get_record('tax').'%');
+			$TPL->set('taxation', $LNG->get('GENERAL','tax').' '.$GM->get_record('tax').'%');
 			$TPL->set('products_total', $CFG->get('GAME','PRODUCTS'));
 			$TPL->set('treasury', $LNG->get('GENERAL','treasury'));
+			$TPL->set('duration_round', $GM->get_record('duration'));
 			$TPL->set('number_format_decimal', $LNG->get('CONFIG','charset_decimal'));
 			$TPL->set('number_format_thousand', $LNG->get('CONFIG','charset_thousand'));
 			$date = new DateTime('1492-10-10');
 			$interval = new DateInterval('P'.$GM->get_record('year').'D');
 			$date->add($interval);
-			$TPL->set('year', $date->format($LNG->get('CONFIG','date_format')).'&nbsp;<small>'.($GM->get_record('end') - $GM->get_record('year')).'</small>');
+			$TPL->set('year', $date->format($LNG->get('CONFIG','date_format')).'&nbsp;<small>'.($GM->get_record('end') - $GM->get_record('year')).'&times;'.$GM->get_record('duration').'</small>');
 			$TPL->set('season', $LNG->get('GENERAL','season'));
 			$TPL->set('citizens', number_format($GM->get_record('citizens'), 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
 			$TPL->set('population', $LNG->get('GENERAL','population'));
@@ -813,9 +835,9 @@
 			$TPL->set('demolish_cost', $GM->get_record('demolish_cost'));
 			// Statistics
 			$statistics = $GM->statistics();
-			$TPL->set('statistics_content', $LNG->get('MENU','statistics'));
+			$TPL->set('statistics_content', $LNG->get('GENERAL','statistics'));
 				// Statistics - Score summary
-				$TPL->set('statistics_score', $LNG->get('MENU','score'));
+				$TPL->set('statistics_score', $LNG->get('GENERAL','score'));
 				$TPL_GRAPH = new template;
 				$TPL_GRAPH->open('game.graph.tpl');
 				$TPL_GRAPH->set('image', '');
@@ -826,10 +848,10 @@
 				$TPL_GRAPH->set('percent', number_format(100*($statistics['curent']['score'] - $statistics['historic']['score'])/($statistics['historic']['score'] +0.01), 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
 				$TPL->set('statistics_score_summary', $TPL_GRAPH->get());
 				// Statistics - Money summary
-				$TPL->set('statistics_money', $LNG->get('MENU','money'));
+				$TPL->set('statistics_money', $LNG->get('GENERAL','money'));
 				$TPL_GRAPH = new template;
 				$TPL_GRAPH->open('game.graph.tpl');
-				$TPL_GRAPH->set('image', $LNG->get('MENU','money_cash'));
+				$TPL_GRAPH->set('image', $LNG->get('GENERAL','money_cash'));
 				$TPL_GRAPH->set('start', 16*$statistics['historic']['money']['cash']/max(($statistics['historic']['money']['cash']+0.01), ($statistics['curent']['money']['cash']+0.01)));
 				$TPL_GRAPH->set('end', 16*$statistics['curent']['money']['cash']/max(($statistics['historic']['money']['cash']+0.01), ($statistics['curent']['money']['cash']+0.01)));
 				$TPL_GRAPH->set('historic', number_format($statistics['historic']['money']['cash'], 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
@@ -838,7 +860,7 @@
 				$money_cash = $TPL_GRAPH->get();
 				$TPL_GRAPH = new template;
 				$TPL_GRAPH->open('game.graph.tpl');
-				$TPL_GRAPH->set('image', $LNG->get('MENU','tax'));
+				$TPL_GRAPH->set('image', $LNG->get('GENERAL','tax'));
 				$TPL_GRAPH->set('start', 16*$statistics['historic']['tax']/max(($statistics['historic']['tax']+0.01), ($statistics['curent']['tax']+0.01)));
 				$TPL_GRAPH->set('end', 16*$statistics['curent']['tax']/max(($statistics['historic']['tax']+0.01), ($statistics['curent']['tax']+0.01)));
 				$TPL_GRAPH->set('historic', number_format($statistics['historic']['tax'], 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
@@ -847,10 +869,10 @@
 				$money_tax = $TPL_GRAPH->get();
 				$TPL->set('statistics_money_summary', $money_cash.$money_tax);
 				// Statistics - Citizens summary
-				$TPL->set('statistics_citizens', $LNG->get('MENU','citizens'));
+				$TPL->set('statistics_citizens', $LNG->get('GENERAL','citizens'));
 				$TPL_GRAPH = new template;
 				$TPL_GRAPH->open('game.graph.tpl');
-				$TPL_GRAPH->set('image', $LNG->get('MENU','citizens'));
+				$TPL_GRAPH->set('image', $LNG->get('GENERAL','citizens'));
 				$TPL_GRAPH->set('start', 16*$statistics['historic']['citizens']/max(($statistics['historic']['citizens']+0.01), ($statistics['curent']['citizens']+0.01)));
 				$TPL_GRAPH->set('end', 16*$statistics['curent']['citizens']/max(($statistics['historic']['citizens']+0.01), ($statistics['curent']['citizens']+0.01)));
 				$TPL_GRAPH->set('historic', number_format($statistics['historic']['citizens'], 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
@@ -858,11 +880,11 @@
 				$TPL_GRAPH->set('percent', number_format(100*($statistics['curent']['citizens'] - $statistics['historic']['citizens'])/($statistics['historic']['citizens'] +0.01), 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
 				$TPL->set('statistics_citizens_summary', $TPL_GRAPH->get());
 				// Experience
-				$TPL->set('expertise_type', $LNG->get('MENU','expertise'));
-				$TPL->set('cost', $LNG->get('MENU','cost'));
-				$TPL->set('level', $LNG->get('MENU','level'));
+				$TPL->set('expertise_type', $LNG->get('GENERAL','expertise'));
+				$TPL->set('cost', $LNG->get('GENERAL','cost'));
+				$TPL->set('level', $LNG->get('GENERAL','level'));
 				$TPL->set('expertise', $GM->get_record('expertise'));
-				$TPL->set('research', $LNG->get('MENU','research'));
+				$TPL->set('research', $LNG->get('GENERAL','research'));
 				//expertise
 				
 				
@@ -877,13 +899,13 @@
 						}
 					}
 				}
-				$TPL->set('statistics_experience', $LNG->get('MENU','expertise'));
+				$TPL->set('statistics_experience', $LNG->get('GENERAL','expertise'));
 				$TPL->set('statistics_citizen_experience_summary', $experience);
 				// Statistics - Buildings summary
-				$TPL->set('statistics_buildings', $LNG->get('MENU','buildings'));
+				$TPL->set('statistics_buildings', $LNG->get('GENERAL','buildings'));
 				$TPL_GRAPH = new template;
 				$TPL_GRAPH->open('game.graph.tpl');
-				$TPL_GRAPH->set('image', $LNG->get('MENU','demolish_cost'));
+				$TPL_GRAPH->set('image', $LNG->get('GENERAL','demolish_cost'));
 				$TPL_GRAPH->set('start', 16*$statistics['historic']['demolish_cost']/max(($statistics['historic']['demolish_cost']+0.01), ($statistics['curent']['demolish_cost']+0.01)));
 				$TPL_GRAPH->set('end', 16*$statistics['curent']['demolish_cost']/max(($statistics['historic']['demolish_cost']+0.01), ($statistics['curent']['demolish_cost']+0.01)));
 				$TPL_GRAPH->set('historic', number_format($statistics['historic']['demolish_cost'], 0, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
@@ -908,7 +930,7 @@
 				}
 				$TPL->set('statistics_buildings_summary', $buildings_demolish_cost.$buildings_analytical);
 				// Statistics - Prices summary
-				$TPL->set('statistics_prices', $LNG->get('MENU','prices'));
+				$TPL->set('statistics_prices', $LNG->get('GENERAL','prices'));
 				$prices_analytical = '';
 				for ($i = 1; $i <= $CFG->get('GAME','PRODUCTS'); $i++) {
 					$TPL_GRAPH = new template;
@@ -929,7 +951,7 @@
 			// Warehouse & prices		
 			$warehouse_items = explode(',', $GM->get_record('warehouse'));
 			$warehouse_prices = explode(',', $GM->get_record('prices'));
-			$TPL->set('warehouse_content', $LNG->get('MENU','warehouse'));
+			$TPL->set('warehouse_content', $LNG->get('GENERAL','warehouse'));
 			$TPL->set('warehouse', $GM->get_record('warehouse'));
 			$TPL->set('prices', $GM->get_record('prices'));
 			$TPL->set('warehouse_prices', $LNG->get('GENERAL','price'));
@@ -973,7 +995,7 @@
 			$TPL->set('products_titles', $products_titles);
 			$TPL->set('plot_production', $LNG->get('GENERAL','production'));
 			// Plot menus
-			$TPL->set('plot_content', $LNG->get('MENU','plot'));
+			$TPL->set('plot_content', $LNG->get('GENERAL','plot'));
 			$TPL->set('available', $LNG->get('GENERAL','available'));
 			$TPL->set('occupied', $LNG->get('GENERAL','occupied'));
 			echo $TPL->get();

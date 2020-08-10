@@ -10,6 +10,9 @@
 			function view_next() {
 				window.location = "game.php";
 			};
+			function view_snap() {
+				window.location = "game.php?action=snap";
+			};
 			function view_end() {
 				window.location = "game.php?action=endgame";
 			};
@@ -24,6 +27,7 @@
 					<img src='90001.png' class='logo_small'>
 					[@city]
 				</div>
+				<button class='button_short' onclick='view_snap();' title='[@continue_snap]'><img src='70014.png' title='[@continue_snap]'></button>
 				<button class='button_short' onclick='[@view]();' title='[@continue]'><img src='70010.png' title='[@continue]'></button>
 			</div>
 			<br>

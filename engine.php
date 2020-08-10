@@ -9,6 +9,14 @@
 		function __construct($game_session) {
 			$this->game_session = $game_session;
 		}
+		public function snap() {
+			Global $DB;
+			$sql = "DELETE FROM `log` WHERE `log`.`id`='".$this->game_session."';";
+			$result = $DB->setquery($sql);
+			$sql = "INSERT INTO `log` SELECT * FROM `users` WHERE `users`.`id`='".$this->game_session."';";
+			$result = $DB->setquery($sql);
+			$this->load_session();
+		}
 		public function load_session() {
 			Global $DB;
 			$sql = "SELECT * FROM `users` WHERE `id`='".$this->game_session."' LIMIT 1;";
@@ -106,7 +114,7 @@
 			$sql = "DELETE FROM `users` WHERE `users`.`id` = '".$login_id."'";
 			$result = $DB->setquery($sql);
 		}
-		public function create($login_username, $login_password, $login_email, $login_city, $login_end, $login_money, $login_citizens, $login_landmass, $login_difficulty, $login_mountain) {
+		public function create($login_username, $login_password, $login_email, $login_city, $login_end, $login_money, $login_citizens, $login_landmass, $login_difficulty, $login_mountain, $login_duration) {
 			Global $CFG;
 			Global $DB;
 			$demolish_cost = rand(10, (10 + $login_difficulty));
@@ -142,11 +150,11 @@
 			$sql = "SELECT COUNT(*) FROM `users` WHERE `name`='".$login_username."';";
 			$result = $DB->getquery($sql);
 			if ($result[0][0] == 0) {
-				$sql = "INSERT INTO `users` (`id`, `name`, `password`, `email`, `city`, `map`, `buildings`, `buildings_cost`, `warehouse`, `prices`, `prices_exchange`, `expertise`, `year`, `end`, `money`, `citizens`, `demolish_cost`, `builds`, `demolitions`, `difficulty`, `tax`) VALUES (NULL, '".$login_username."', MD5('".$login_password."'), '".$login_email."', '".$login_city."', '".$map."', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '".$buildings_cost."', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '".$prices."', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '0', '".$login_end."', '".$login_money."', '".$login_citizens."', '".$demolish_cost."', '0', '0', '".$login_difficulty."', '1');";
+				$sql = "INSERT INTO `users` (`id`, `name`, `password`, `email`, `city`, `map`, `buildings`, `buildings_cost`, `warehouse`, `prices`, `prices_exchange`, `expertise`, `year`, `end`, `money`, `citizens`, `demolish_cost`, `builds`, `demolitions`, `difficulty`, `tax`, `duration`) VALUES (NULL, '".$login_username."', MD5('".$login_password."'), '".$login_email."', '".$login_city."', '".$map."', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '".$buildings_cost."', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '".$prices."', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '0', '".$login_end."', '".$login_money."', '".$login_citizens."', '".$demolish_cost."', '0', '0', '".$login_difficulty."', '1', '".$login_duration."');";
 				$result = $DB->setquery($sql);
 				$new_user = $DB->getquery_id();
 				$this->game_session = $new_user;
-				$sql = "INSERT INTO `log` (`id`, `name`, `password`, `email`, `city`, `map`, `buildings`, `buildings_cost`, `warehouse`, `prices`, `prices_exchange`, `expertise`, `year`, `end`, `money`, `citizens`, `demolish_cost`, `builds`, `demolitions`, `difficulty`, `tax`) VALUES ('".$new_user."', '".$login_username."', MD5('".$login_password."'), '".$login_email."', '".$login_city."', '".$map."', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '".$buildings_cost."', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '".$prices."', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '0', '".$login_end."', '".$login_money."', '".$login_citizens."', '".$demolish_cost."', '0', '0', '".$login_difficulty."', '1');";
+				$sql = "INSERT INTO `log` (`id`, `name`, `password`, `email`, `city`, `map`, `buildings`, `buildings_cost`, `warehouse`, `prices`, `prices_exchange`, `expertise`, `year`, `end`, `money`, `citizens`, `demolish_cost`, `builds`, `demolitions`, `difficulty`, `tax`, `duration`) VALUES ('".$new_user."', '".$login_username."', MD5('".$login_password."'), '".$login_email."', '".$login_city."', '".$map."', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '".$buildings_cost."', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '".$prices."', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0', '0', '".$login_end."', '".$login_money."', '".$login_citizens."', '".$demolish_cost."', '0', '0', '".$login_difficulty."', '1', '".$login_duration."');";
 				$result = $DB->setquery($sql);
 				$new_user = $DB->getquery_id();
 				return $new_user;

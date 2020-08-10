@@ -105,17 +105,6 @@
 						<tr>
 							<td align='center'>
 								<form name='game' method='post' action='index.php'>
-									<input type='hidden' name='action' value='manual'>
-									<input type='submit' class='button_short' value='&nbsp;[@manual]&nbsp;'>
-								</form>
-							</td>
-							<td align='left'>
-								[@manual_info]
-							</td>
-						</tr>
-						<tr>
-							<td align='center'>
-								<form name='game' method='post' action='index.php'>
 									<input type='hidden' name='action' value='highscores'>
 									<input type='submit' class='button_short' value='&nbsp;[@highscores]&nbsp;'>
 								</form>
