@@ -76,6 +76,7 @@
 	level					= "Level";
 	load					= "Load";
 	load_info				= "Load and continue a previous saved session";
+	location_info			= "Set the location of the colony";
 	login					= "Login";
 	logoff					= "Exit";
 	manual					= "Manual";
@@ -110,6 +111,12 @@
 	season_days_remain		= "days remain for your reign";
 	send					= "Send";
 	speciality				= "Speciality productivity factor";
+	stat_build				= "Total building cost";
+	stat_demolish			= "Total demolish cost";
+	stat_buy				= "Total buying cost";
+	stat_sell				= "Total selling cost";
+	stat_research			= "Total research cost";
+	stat_tax				= "Total tax paid";
 	statistics				= "Statistics";
 	tax						= "Tax";
 	total					= "Total";

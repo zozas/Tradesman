@@ -104,6 +104,7 @@
 		$TPL->set('mountain_range', $LNG->get('GENERAL','mountain_range'));
 		$TPL->set('application_title', $CFG->get('APPLICATION','TITLE'));
 		$TPL->set('application_subtitle', preg_replace('/\s+/', '&nbsp;&middot;&nbsp;', $CFG->get('APPLICATION','SUBTITLE')));
+		$TPL->set('location_info', $LNG->get('GENERAL','location_info'));
 		$TPL_COPYRIGHT = new template;
 		$TPL_COPYRIGHT->open('game.copyright.tpl');
 		$TPL_COPYRIGHT->set('application_product', $CFG->get('APPLICATION','PRODUCT'));
@@ -143,6 +144,7 @@
 			$highscores_entries = $CFG->get('GAME','HIGHSCORES');
 		$highscores = $GM->highscores($highscores_entries);
 		$highscores_template = '';
+		$map_entries = "";
 		for ($i = 0; $i < $highscores_entries; $i++) {
 			$TPL_SCORES = new template;
 			$TPL_SCORES->open('game.scores.tpl');
@@ -164,8 +166,10 @@
 			$TPL_SCORES->set('difficulty', $highscores[$i]['difficulty']);
 			$TPL_SCORES->set('score', number_format($highscores[$i]['score'], 2, $LNG->get('CONFIG','charset_thousand'), $LNG->get('CONFIG','charset_decimal')));
 			$highscores_template = $highscores_template.$TPL_SCORES->get();
+			$map_entries = $map_entries."document.getElementById('worldmap').getContext('2d').fillStyle = '#FF0000';document.getElementById('worldmap').getContext('2d').beginPath();document.getElementById('worldmap').getContext('2d').arc(".$highscores[$i]['coordinate_x'].", ".$highscores[$i]['coordinate_y'].", 2, 0, 4*Math.PI);document.getElementById('worldmap').getContext('2d').font = 'bold 12px Trebuchet MS';document.getElementById('worldmap').getContext('2d').fillText('".$highscores[$i]['city']."', 3+".$highscores[$i]['coordinate_x'].", 3+".$highscores[$i]['coordinate_y'].");document.getElementById('worldmap').getContext('2d').fill();";
 		}
 		$TPL->set('highscore_entries', $highscores_template);
+		$TPL->set('highscore_map_entries', $map_entries);
 		$TPL->set('application_title', $CFG->get('APPLICATION','TITLE'));
 		$TPL->set('application_subtitle', preg_replace('/\s+/', '&nbsp;&middot;&nbsp;', $CFG->get('APPLICATION','SUBTITLE')));
 		$TPL_COPYRIGHT = new template;
@@ -243,8 +247,18 @@
 		else
 			if (isset($_GET['login_duration']))
 				$login_duration = $_GET['login_duration'];
+		if (isset($_POST['login_coordinate_x']))
+			$login_coordinate_x = $_POST['login_coordinate_x'];
+		else
+			if (isset($_GET['login_coordinate_x']))
+				$login_coordinate_x = $_GET['login_coordinate_x'];
+		if (isset($_POST['login_coordinate_y']))
+			$login_coordinate_y = $_POST['login_coordinate_y'];
+		else
+			if (isset($_GET['login_coordinate_y']))
+				$login_coordinate_y = $_GET['login_coordinate_y'];
 		$GM = new game(0);
-		$new_user = $GM->create($login_username, $login_password, $login_email, $login_city, $login_end, $login_money, $login_citizens, $login_landmass, $login_difficulty, $login_mountain, $login_duration);
+		$new_user = $GM->create($login_username, $login_password, $login_email, $login_city, $login_end, $login_money, $login_citizens, $login_landmass, $login_difficulty, $login_mountain, $login_duration, $login_coordinate_x, $login_coordinate_y);
 		if ($new_user > 0) {
 			$SES->set('USER_NAME', $login_username);
 			$SES->set('USER_PASSWORD', $login_password);

@@ -93,7 +93,28 @@
 							<td align='center' colspan='9'>
 								&nbsp;
 							</td>
-						</tr>	
+						</tr>
+						<tr>
+							<td align='center' colspan='9'>
+								<div id='worldmap_marker'>
+									<canvas id='worldmap' width='320' height='172' style='border:none;'>
+								</div>
+								<script>
+									var image_map = new Image();
+									image_map.src = '70015.png';
+									image_map.onload = function () {
+										document.getElementById('worldmap').getContext('2d').drawImage(image_map, 0, 0);
+										[@highscore_map_entries]
+									};
+									
+								</script>
+							</td>
+						</tr>
+						<tr>
+							<td align='center' colspan='9'>
+								&nbsp;
+							</td>
+						</tr>
 						<tr>
 							<td align='center' colspan='9'>
 								<form name='game' method='post' action='index.php'>

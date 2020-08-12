@@ -62,12 +62,14 @@
 			$current_money = $GM->get_record('money');
 			$warehouse_prices = explode(",", $GM->get_record('prices'));
 			$warehouse_items = explode(",", $GM->get_record('warehouse'));
-			if (($current_money - $warehouse_prices[$action_parameters]) > 0) {
+			if (($current_money - $warehouse_prices[$action_parameters]*((100 - $current_tax)/100)) > 0) {
 				$current_tax = $GM->get_record('tax');
-				$GM->set_record('money', floor($current_money + $warehouse_prices[$action_parameters]*((100 - $current_tax)/100)));
+				$GM->set_record('money', floor($current_money - $warehouse_prices[$action_parameters]*((100 - $current_tax)/100)));
 				$warehouse_items[$action_parameters] = $warehouse_items[$action_parameters] + 1;
 				$warehouse_items_update = implode(',', $warehouse_items);
 				$GM->set_record('warehouse', $warehouse_items_update);
+				$GM->set_record('stat_buy', $GM->get_record('stat_buy') + $warehouse_prices[$action_parameters]);
+				$GM->set_record('stat_tax', $GM->get_record('stat_tax') + floor($warehouse_prices[$action_parameters]*($current_tax/100)));
 			}
 			$prices_exchange = explode(",", $GM->get_record('prices_exchange'));
 			$prices_exchange[$action_parameters] = $prices_exchange[$action_parameters] + 1;
@@ -83,6 +85,8 @@
 				$warehouse_items[$action_parameters] = $warehouse_items[$action_parameters] - 1;
 				$warehouse_items_update = implode(',', $warehouse_items);
 				$GM->set_record('warehouse', $warehouse_items_update);
+				$GM->set_record('stat_sell', $GM->get_record('stat_sell') + $warehouse_prices[$action_parameters]);
+				$GM->set_record('stat_tax', $GM->get_record('stat_tax') + floor($warehouse_prices[$action_parameters]*($current_tax/100)));
 			}
 			$prices_exchange = explode(",", $GM->get_record('prices_exchange'));
 			$prices_exchange[$action_parameters] = $prices_exchange[$action_parameters] - 1;
@@ -100,6 +104,7 @@
 				$buildings[$current_tile] = $building_type;
 				$buildings_update = implode(',', $buildings);
 				$GM->set_record('buildings', $buildings_update);
+				$GM->set_record('stat_build', $GM->get_record('stat_build') + $buildings_cost[$building_type - 1]);
 			}
 			$GM->set_record('builds', $GM->get_record('builds')+1);
 		} else if ($action == 'demolish') {
@@ -114,6 +119,7 @@
 				$buildings[$current_tile] = 0;
 				$buildings_update = implode(',', $buildings);
 				$GM->set_record('buildings', $buildings_update);
+				$GM->set_record('stat_demolish', $GM->get_record('stat_demolish') + floor(($demolish_cost * $buildings_cost[$buildings[$current_tile]])/100));
 			}
 			$GM->set_record('demolitions', $GM->get_record('demolitions')+1);
 		} else if ($action == 'research') {
@@ -127,6 +133,7 @@
 				$expertise[$current_expertise] = $expertise[$current_expertise] + 1;
 				$expertise_update = implode(',', $expertise);
 				$GM->set_record('expertise', $expertise_update);
+				$GM->set_record('stat_research', $GM->get_record('stat_research') + $current_expertise_cost);
 			}
 		}
 	} else {

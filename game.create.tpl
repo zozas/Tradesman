@@ -229,6 +229,50 @@
 								</td>
 							</tr>
 							<tr>
+								<td colspan='3'>
+									<center>
+										[@location_info] :
+										<br>
+										<br>
+										<div id='worldmap_marker'>
+											<canvas id='worldmap' width='320' height='172' style='border:none;' onclick="clickHotspotImage(event);">
+										</div>
+										<input type='hidden' id='login_coordinate_x' name='login_coordinate_x' value='0'>
+										<input type='hidden' id='login_coordinate_y' name='login_coordinate_y' value='0'>
+										<br>
+										<br>
+										<span id='coords'>0<sup>&#8728;</sup>, 0<sup>&#8728;</sup></span>
+										<script>
+											var image_map = new Image();
+											image_map.src = '70015.png';
+											var ctx = document.getElementById('worldmap').getContext('2d');
+											image_map.onload = function () {
+												ctx.drawImage(image_map, 0, 0);
+											};
+											function clickHotspotImage(event) {
+												var xCoordinate = event.offsetX;
+												var yCoordinate = event.offsetY;
+												document.getElementById('login_coordinate_x').value = event.offsetX;
+												document.getElementById('login_coordinate_y').value = event.offsetY;
+												document.getElementById('coords').innerHTML = event.offsetX + '<sup>&#8728;</sup>, ' + event.offsetY + '<sup>&#8728;</sup>';
+												document.getElementById('worldmap').getContext('2d').clearRect(0, 0, document.getElementById('worldmap').width, document.getElementById('worldmap').height);
+												document.getElementById('worldmap').getContext('2d').drawImage(image_map, 0, 0);
+												var ctx = document.getElementById('worldmap').getContext('2d');
+												ctx.fillStyle = "#FF0000";
+												ctx.beginPath();
+												ctx.arc(event.offsetX, event.offsetY, 2, 0, 4*Math.PI);
+												ctx.fill();
+											}
+										</script>
+									</center>
+								</td>
+							</tr>
+							<tr>
+								<td colspan='3'>
+									&nbsp;
+								</td>
+							</tr>
+							<tr>
 								<td colspan='3' align='center'>
 									<input type='submit' class='button_short' value='&nbsp;[@create]&nbsp;'>
 								</td>

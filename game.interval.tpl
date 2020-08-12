@@ -62,6 +62,24 @@
 					</small>
 					<br>
 					<br>
+					<center>
+						<div id='worldmap_marker'>
+							<canvas id='worldmap' width='320' height='172' style='border:none;'>
+						</div>
+						<span id='coords'>[@coordinate_x]<sup>&#8728;</sup>, [@coordinate_y]<sup>&#8728;</sup></span>
+						<script>
+							var image_map = new Image();
+							image_map.src = '70015.png';
+							image_map.onload = function () {
+								document.getElementById('worldmap').getContext('2d').drawImage(image_map, 0, 0);
+							};
+							var ctx = document.getElementById('worldmap').getContext('2d');
+							document.getElementById('worldmap').getContext('2d').fillStyle = "#FF0000";
+							document.getElementById('worldmap').getContext('2d').beginPath();
+							document.getElementById('worldmap').getContext('2d').arc([@coordinate_x], [@coordinate_y], 2, 0, 4*Math.PI);
+							document.getElementById('worldmap').getContext('2d').fill();								
+						</script>
+					</center>
 					<table>
 						<thead>
 							<tr>

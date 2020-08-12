@@ -156,7 +156,7 @@
 				window.location = "login.php?action=logout";
 			}
 			function warehouse_buy(product_item) {
-				if(money > prices[product_item-1]) {
+				if(money > prices[product_item-1]*((100 - tax)/100)) {
 					money = Math.floor(money - prices[product_item-1]*((100 - tax)/100));
 					engine_ajax('buy', (product_item-1));
 					document.getElementById('money_amount').innerHTML  = number_format(money, 0, number_format_decimal, number_format_thousand);
